@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Lecture 12</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+        <!-- Bootstrap core CSS -->
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <link href="prism.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    </head>
+    <body>
+        <div class="container">
+            <header class="blog-header py-3 mb-4 pt-3 pb-3">
+                <h1 style="font-family: Roboto Condensed; font-weight: bold;" class="display-5 mb-0 text-center">Lecture 12</h1>
+            </header>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec12/</code></a></h5>
+                </div>
+                <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Set up directory and copy over files</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/projects/lec12
+cd ~/projects/lec12
+cp -r /home/partage/lec12/* ./
+ls -lh</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9"> Generate an uniformly binned contact matrix from <code>NPC_1.chr19.pairs.gz</code></a></h5>
+                </div>
+                <div id="collapse9" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Check out the first few lines of the file</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">zcat NPC_1.chr19.pairs.gz | head | column -t</code></pre>
+                        <hr>
+                        <p>Set up environment</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda activate /home/partage/envs/hic
+export NUMEXPR_MAX_THREADS=1
+export MKL_NUM_THREADS=1
+export OMP_NUM_THREADS=1</code></pre>
+                        <hr>
+                        <p>Create matrix from the pairix-indexed and sorted file with <kbd>cooler cload pairix</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler cload pairix mm10.chr19.size:10000 NPC_1.chr19.pairs.gz NPC_1.chr19.cool -p 1</code></pre>
+                        <hr>
+                        <p>Examine the output file's metadata using <kbd>cooler info</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler info NPC_1.chr19.cool </code></pre>
+                        <hr>
+                        <p>Perform matrix balancing through <kbd>cooler balance</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler balance NPC_1.chr19.cool -p 1</code></pre>
+                        <hr>
+                        <p>Look at the underlying data through <kbd>cooler dump</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler dump --join --balanced --header NPC_1.chr19.cool | sed -n '1p;12500,12520p;12521q' | column  -t</code></pre>
+                        <hr>
+                        <p>Coarsen the matrix with <kbd>cooler zoomify</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler zoomify -p 1 -r 10000,100000 --balance -o NPC_1.chr19.mcool NPC_1.chr19.cool</code></pre>
+                        <hr>
+                        <p>List the contents inside the mcool file with <kbd>cooler ls</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler ls NPC_1.chr19.mcool</code></pre>
+                        <hr>
+                        <p>Visualize the results using <kbd>cooler show</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler show NPC_1.chr19.mcool::/resolutions/10000 -b -o 10kb.ice.png chr19
+cooler show NPC_1.chr19.mcool::/resolutions/100000 -b -o 100kb.ice.png chr19
+cooler show NPC_1.chr19.mcool::/resolutions/10000 -o 10kb.raw.png chr19
+cooler show NPC_1.chr19.mcool::/resolutions/100000 -o 100kb.raw.png chr19</code></pre>
+                        <hr>
+                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec12
+mv *png ~/public_html/lec12/
+chmod -R 755 ~/public_html/lec12</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2">Try out HiCRep on <code>ESC_1.mcool</code> and <code>NPC_1.mcool</code></a></h5>
+                </div>
+                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Grab the files</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ln -s /home/partage/lec12_extra/* ./</code></pre>
+                        <hr/>
+                        <p>Apply <kbd>HiCRep</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">hicrep --binSize 500000 --h 2 --dBPMax 5000000 ESC_1.mcool NPC_1.mcool hicrep.out</code></pre>
+                        <hr/>
+                        <p>Show the output</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cat hicrep.out</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse3" aria-expanded="false" aria-controls="collapse3">Calculate a contact probability decay curve for the generated mcool file</a></h5>
+                </div>
+                <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Take the average across sub-diagonals with <kbd>cooltools compute-expected</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools compute-expected NPC_1.chr19.mcool::/resolutions/10000 -o NPC_1.chr19.cis.tsv -p 1 --contact-type cis</code></pre>
+                        <hr/>
+                        <p>Peek at the output</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.cis.tsv | column -t</code></pre>
+                        <hr/>
+                        <p>How would you compute the expected value for trans matrices?</p>
+                        <hr/>
+                        <p>Further process the file for visuaslization through <kbd>cooltools logbin-expected</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools logbin-expected NPC_1.chr19.cis.tsv NPC_1.chr19.cis --bins-per-order-magnitude 20 --resolution 1000</code></pre>
+                        <hr/>
+                        <p>Again check out the first few lines</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.cis.log.tsv
+head NPC_1.chr19.cis.der.tsv</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5"> Perform eigendecomposition on the same matrix</a></h5>
+                </div>
+                <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Compute the first few eigenvectors using <kbd>cooltools call-compartments</kbd> with GC content as the reference for sign-flipping</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools call-compartments NPC_1.chr19.mcool::/resolutions/100000 \
+  --reference-track gc/100000.bg --contact-type cis --n-eigs 3 -o NPC_1.chr19</code></pre>
+                        <hr/>
+                        <p>Look at the outputs</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cat NPC_1.chr19.cis.lam.txt
+head NPC_1.chr19.cis.vecs.tsv</code></pre>
+                        <hr>
+                        <p>What are some other hallmarks distinguishing euchromatin from heterochromatin?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse6" aria-expanded="false" aria-controls="collapse6"> Identify contact-insulating loci also for the same matrix</a></h5>
+                </div>
+                <div id="collapse6" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Compute insulation score via <kbd>cooltools diamond-insulation</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools diamond-insulation NPC_1.chr19.mcool::/resolutions/10000 100000 > NPC_1.chr19.ins.tsv</code></pre>
+                        <hr/>
+                        <p>Inspect the output</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.ins.tsv</code></pre>
+                        <hr/>
+                        <p>Select strongly insulating loci and convert to the BED file</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">sed 1d NPC_1.chr19.ins.tsv \
+  | grep -v nan \
+  | awk -v OFS='\t' '($4 != "True" &amp;&amp; $7 > 0.2){print $1, $2, $3, $7}' \
+  > NPC_1.chr19.bdrs.bed</code></pre>
+                        <hr/>
+                        <p>Create a bigWig track for the insulation score</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">sed 1d NPC_1.chr19.ins.tsv | cut -f-5 | egrep -v 'nan|True' | cut -f1-3,5 > NPC_1.chr19.IS.bg
+bedGraphToBigWig NPC_1.chr19.IS.bg mm10.chr19.size NPC_1.chr19.IS.bw</code></pre>
+                        <hr/>
+                        <p>Aggregate the insulation score track around the selected loci</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">computeMatrix reference-point -S NPC_1.chr19.IS.bw -R NPC_1.chr19.bdrs.bed \
+  --referencePoint center -b 100000 -a 100000 -bs 1000 -o NPC_1.chr19.IS.bdrs.mat.gz
+plotHeatmap -m NPC_1.chr19.IS.bdrs.mat.gz -o NPC_1.chr19.IS.bdrs.pdf \
+  --legendLocation none --yAxisLabel "" --xAxisLabel "" --colorMap magma \
+  --regionsLabel "" --refPointLabel "Insulating loci"</code></pre>
+                        <hr/>
+                        <p>(Skip in class) Visualize other marks for genome-wide calls</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">computeMatrix reference-point -S chip/NPC*.bw -R NPC.bdrs.bed \
+  --referencePoint center -a 1000000 -b 1000000 -bs 10000 -o NPC.bdrs.mat.gz
+plotHeatmap -m NPC.bdrs.mat.gz -o NPC.bdrs.pdf --legendLocation none --yAxisLabel "" \
+  --xAxisLabel "" --colorMap magma --regionsLabel "" --refPointLabel "Insulating loci" \
+  --samplesLabel CTCF H3K27ac H3K27me3 H3K36me3 H3K4me1 H3K4me3 H3K9me3 Ring1b</code></pre>
+                        <hr>
+                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv *pdf ~/public_html/lec12/
+chmod -R 644 ~/public_html/lec12/*pdf</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse7" aria-expanded="false" aria-controls="collapse7"> Find dots on again the same matrix</a></h5>
+                </div>
+                <div id="collapse7" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Use the expected values computed before together with <kbd>cooltools call-dots</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools call-dots NPC_1.chr19.mcool::/resolutions/10000 NPC_1.chr19.cis.tsv -o NPC_1.chr19.dots -p 1</code></pre>
+                        <hr/>
+                        <p>Look at the outputs</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.dots | column -t
+head NPC_1.chr19.dots.postproc</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bootstrap core JavaScript
+    ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/popper.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/prism.js"></script>
+        <script src="assets/js/extra.js"></script>
+        <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" data-toggle="tooltip" data-placement="left"><span class="fas fa-angle-up"></span></a>
+    </body>
+</html>

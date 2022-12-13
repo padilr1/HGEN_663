@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Lecture 7</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+        <!-- Bootstrap core CSS -->
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <link href="prism.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    </head>
+    <body>
+        <div class="container">
+            <header class="blog-header py-3 mb-4 pt-3 pb-3">
+                <h1 style="font-family: Roboto Condensed; font-weight: bold;" class="display-5 mb-0 text-center">Lecture 7</h1>
+            </header>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec7/</code></a></h5>
+                </div>
+                <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Set up directory and copy over files</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/projects/lec7
+cd ~/projects/lec7
+cp -r /home/partage/lec7/* ./
+ls -lh</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9"> Take a look at the outputs of STAR-FUSION</a></h5>
+                </div>
+                <div id="collapse9" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Check out the first few lines from the abrdiged results file</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">column -t fusion/kd3.fusion_predictions.abridged.tsv | less -S</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2">Assemble transcripts using StringTie</a></h5>
+                </div>
+                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Set up variables</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/partage/bin:$PATH
+module load StdEnv/2020 gcc/9.3.0 stringtie/2.1.3
+awk '$1=="chr6"' gencode.gtf > gencode.chr6.gtf</code></pre>
+                        <hr/>
+                        <p>Apply <kbd>stringtie</kbd> without and without reference annotations</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">stringtie --rf -o guided/ct1.gtf ct1.bam
+stringtie --rf -G gencode.chr6.gtf -o denovo/ct1.gtf ct1.bam</code></pre>
+                        <hr/>
+                        <p>Combine sample-specific outputs</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">stringtie --merge -o denovo.gtf denovo/*.gtf
+stringtie --merge -o guided.gtf guided/*.gtf</code></pre>
+                        <hr/>
+                        <p>Compare with reference annotations using <kbd>gffcompare</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gffcompare -r gencode.chr6.gtf -o denovo denovo.gtf
+gffcompare -r gencode.chr6.gtf -o guided guided.gtf</code></pre>
+                        <hr/>
+                        Check out the summary
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cpr -m -t denovo.stats guided.stats</code></pre>
+                        <hr/>
+                        How many novel transcripts did we find?
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">awk '$3=="transcript"' guided.annotated.gtf| grep 'class_code "u"' | wc -l </code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse3" aria-expanded="false" aria-controls="collapse3">Identify differential splicing events through LeafCutter</a></h5>
+                </div>
+                <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Set up environment</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda activate /home/partage/envs/leafcutter
+export R_LIBS=/home/partage/envs/leafcutter/R_LIBS
+LCDIR=/home/partage/envs/leafcutter/3f875f1</code></pre>
+                        <hr/>
+                        <p>Parse out junctions with <kbd>regtools</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">for b in *.bam; do regtools junctions extract -a 8 -m 50 -M 500000 $b -o $b.junc -s 1 ; done</code></pre>
+                        <hr/>
+                        <p>Note down sample information for downstream use</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ls -A1 *junc > juncfiles
+sed 's/.junc//' juncfiles \
+  | awk -v OFS='\t' '{print $1, substr($1,0,2) == "ct" ? "control" : "knockdown"}' \
+  > groupfiles</code></pre>
+                        <hr/>
+                        <p>Run <kbd>LeafCutter</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">python $LCDIR/clustering/leafcutter_cluster_regtools.py -j juncfiles -m 50 -l 500000
+$LCDIR/scripts/leafcutter_ds.R \
+  --num_threads 1 \
+  --exon_file exons.txt.gz \
+  --min_samples_per_intron 3 \
+  leafcutter_perind_numers.counts.gz \
+  groupfiles</code></pre>
+                        <hr/>
+                        <p>Pack up results for visualization</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">$LCDIR/leafviz/prepare_results.R \
+  --meta_data_file groupfiles \
+  --code KD \
+  leafcutter_perind_numers.counts.gz \
+  leafcutter_ds_cluster_significance.txt \
+  leafcutter_ds_effect_sizes.txt \
+  hg38 \
+  -o viz.rda</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5"> (Optional) Compute coverage track for <code>kd1.bam</code> with bamCoverage</a></h5>
+                </div>
+                <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Run <kbd>bamCompare</kbd> selecting just reads from one strand</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load mugqic/deepTools/3.5.0
+bamCoverage -b kd1.bam -o kd1.plus.bw --region chr6 --filterRNAstrand forward </code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bootstrap core JavaScript
+    ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/popper.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/prism.js"></script>
+        <script src="assets/js/extra.js"></script>
+        <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" data-toggle="tooltip" data-placement="left"><span class="fas fa-angle-up"></span></a>
+    </body>
+</html>

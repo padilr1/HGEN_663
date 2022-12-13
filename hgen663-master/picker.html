@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap core CSS -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <link href='https://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>Student picker</title>
+</head>
+<style>
+body {
+    font-family: 'Lato', sans-serif;
+    color: white;
+    text-align: center;
+}
+h1 {
+    color: black;
+    margin-top: 100px;
+    margin-bottom: 20px;
+}
+p {
+    font-size: 18px;
+}
+hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    width: 50px;
+    border-top: 2px solid #ccc;
+    margin: 20px auto 25px auto;
+}
+.circle {
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: rgba(0,0,0,.2);
+    font-size: 48px;
+    color: black;
+    line-height: 236px;
+    text-align: center;
+    border: 2px solid white;
+}
+</style>
+<body>
+<div class="container align-middle">
+<h1 class="mb-2 light text-center">Student picker</h1>
+<hr>
+    <div class="row justify-content-center mt-4 mb-4">
+        <button type="button" class="btn btn-secondary btn-lg" onclick="spick()">Pick</button>
+    </div>
+    <div class="row justify-content-center" id="lotto"></div>
+</div>
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script>
+function spick() {
+    if (document.getElementsByClassName('circle').length) {
+        const removeElements = (elms) => elms.forEach(el => el.remove());
+        removeElements( document.querySelectorAll(".circle") );
+    }
+    const studs = ["Bill", "Kelly", "Eric", "Yixiao", "Maxime", "Yuri", "Ana", "Larisa", "Klara", "Zac", "Reinnier", "Lucy", "Jialin", "Matthew"];
+    let stud = studs[Math.random() * studs.length | 0];
+    let lotto = document.getElementById("lotto");
+    let circle = document.createElement('span');
+    circle.setAttribute('class', 'circle m-3');
+    circle.textContent = stud;
+    lotto.append(circle);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Lecture 10</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+        <!-- Bootstrap core CSS -->
+        <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <link href="prism.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Condensed">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Dosis">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    </head>
+    <body>
+        <div class="container">
+            <header class="blog-header py-3 mb-4 pt-3 pb-3">
+                <h1 style="font-family: Roboto Condensed; font-weight: bold;" class="display-5 mb-0 text-center">Lecture 10</h1>
+            </header>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec10/</code></a></h5>
+                </div>
+                <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Set up directory and copy over files</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 samtools/1.11 r/4.0.2
+conda activate /home/partage/envs/chip 
+mkdir -p ~/projects/lec10
+cd ~/projects/lec10
+cp -r /home/partage/lec10/* ./
+ls -lh</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2">Assess the profile of <code>KO_H3K27ac.chr1.bam</code> near promoters</a></h5>
+                </div>
+                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Produce coverage track with <kbd>bamCoverage</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">bamCoverage -b KO_H3K27ac.chr1.bam -o KO_H3K27ac.chr1.bw</code></pre>
+                        <hr/>
+                        <p>Aggregate signal around promoter regions using <kbd>computeMatrix</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">computeMatrix reference-point -R promoter.chr1.bed -S KO_H3K27ac.chr1.bw -o KO_H3K27ac.promoter.chr1.mat.gz --referencePoint center -bs 100 -a 10000 -b 10000</code></pre>
+                        <hr/>
+                        <p>Visualize output through <kbd>plotHeatmap</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">plotHeatmap -m KO_H3K27ac.promoter.chr1.mat.gz -o KO_H3K27ac.promoter.chr1.pdf --legendLocation none --yAxisLabel "" --xAxisLabel "" --colorMap magma --regionsLabel "" --refPointLabel "Promoter"</code></pre>
+                        <hr/>
+                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec10
+mv -t ~/public_html/lec10/ *bw *pdf
+chmod -R 755 ~/public_html/lec10</code></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse3" aria-expanded="false" aria-controls="collapse3">Call peaks in <code>KO_H3K27ac.chr1.bam</code> with MACS </a></h5>
+                </div>
+                <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Identify significantly enriched regions using <kbd>macs3</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">macs3 callpeak -t KO_H3K27ac.chr1.bam -c KO_Input.chr1.bam -f BAM -g 2.4e8 -n KO_H3K27ac.chr1 -q 0.01</code></pre>
+                        <hr/>
+                        <p>Plot strand shift profile</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">Rscript KO_H3K27ac.chr1_model.r </code></pre>
+                        <hr/>
+                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv -t ~/public_html/lec10/ *narrowPeak *pdf *csv
+chmod -R 755 ~/public_html/lec10</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bootstrap core JavaScript
+    ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/popper.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/prism.js"></script>
+        <script src="assets/js/extra.js"></script>
+        <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" data-toggle="tooltip" data-placement="left"><span class="fas fa-angle-up"></span></a>
+    </body>
+</html>
