@@ -1,0 +1,159 @@
+---
+title: "Lecture 5"
+output: html_notebook
+---
+
+```{r}
+pkgs <- c("ggplot2","tximport", "DESeq2", "vsn","gplots", "hexbin", "annotables")
+lapply(pkgs, require, character.only = TRUE)
+
+# read in featureCounts result
+fc <- read.table("ex_featurecounts.txt",header = 1)
+
+# rename counts column for simplicity
+fc$count <- fc$results.ex_Aligned.sortedByCoord.out.bam
+
+# take a look at fc
+View(head(fc))
+```
+
+---
+
+```{r}
+
+```
+
+How does the distribution of counts look like?
+
+---
+
+```{r}
+# import salmon results
+sm <- tximport("quant.sf", type="salmon", tx2gene=grch38_tx2gene, ignoreTxVersion = T)
+
+# take a look at sm
+View(head(sm$counts))
+View(head(sm$abundance))
+View(head(sm$length))
+
+# merge by ensembl gene id
+both <- merge(sm$counts,fc, by.x = "row.names",by.y="Geneid")
+
+# rename for simplicity
+both$sm <- both$V1
+both$fc <- both$count
+```
+
+---
+
+```{r}
+# count how many genes are not expressed
+
+
+# make a list of gene ids with a count of 0 in sm (both$sm)
+zgenes.sm <- 
+
+# make a list of gene ids with a count of 0 in fc (both$fc)
+zgenes.fc <- 
+
+# make a Venn diagram
+venn(list(salmon=zgenes.sm, featurecounts=zgenes.fc))
+
+# only keep genes with non-zero counts in both
+both <- 
+
+# plot correlation
+
+
+```
+
+How similar are the results from Salmon and STAR+featureCounts?
+
+---
+
+```{r}
+# load full dataset
+load('lec5.RData')
+
+# take a look at "data"
+View(head(data))
+
+# take a look at "dds"
+View(head(count(dds)))
+```
+
+---
+
+```{r}
+# plot mean vs variance of a triplicate in columns 6-8
+
+```
+
+Poisson is often used to model discrete counts, but assumes constant variance. Is that the case here?
+
+---
+
+```{r}
+
+
+# variance stabilizing, regularized log, and shift log transformations
+vsd <- vst(dds, blind=FALSE)
+rld <- rlog(dds, blind=FALSE)
+ntd <- normTransform(dds)
+
+# plot effects of transformation on variance
+sd.ntd <- meanSdPlot(assay(ntd),plot=F)
+sd.ntd$gg + ggtitle('log')
+
+sd.vsd <- meanSdPlot(assay(vsd),plot=F)
+sd.vsd$gg + ggtitle('vst')
+
+sd.rld <- meanSdPlot(assay(rld),plot=F)
+sd.rld$gg + ggtitle('rlog')
+
+# now try again keeping only genes with expression above some threshold
+```
+
+Although differential expression analysis requires raw counts, transformed data generally works better for visualization, clustering, and other uses. Compare a simple log2 transformation versus the regularized log and variance stabilizing transformations.
+
+---
+
+```{r}
+# how can you subset the data?
+select <- 
+heatmap(assay(ntd)[select,])
+heatmap(assay(vsd)[select,])
+heatmap(assay(rld)[select,])
+```
+
+There are too many genes to perform hierarchical clustering quickly, so a subset of data will be looked at instead.
+
+---
+
+```{r}
+load('txi.RData')
+
+# use abundance from salmon (already in tpm)
+dds.tpm <- txi$abundance[keep,]
+
+# retrieve average length from salmon results
+lns <- txi$length
+lns <- lns[match(rownames(dds), rownames(lns)),]
+mcols(dds)$basepairs <- rowMeans(lns)
+
+# calculate fpkm
+dds.fpkm <- fpkm(dds)
+
+heatmap(dds.fpkm[select,])
+heatmap(dds.tpm[select,])
+```
+
+What happens if you use try to cluster using counts (or the likes of TPM/FPKM) directly?
+
+---
+
+```{r}
+
+```
+
+Pick a gene, does the expression level seem different between conditions?
