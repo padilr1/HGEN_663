@@ -1,0 +1,7 @@
+name: ""
+navbar:
+  title: "HGEN 663"
+  left:
+    - text: "Index"
+      href: index.html
+output_dir: "docs"
