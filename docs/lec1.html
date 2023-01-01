@@ -35,6 +35,19 @@
             <header class="blog-header py-3 mb-4 pt-3 pb-3">
                 <h1 style="font-family: Roboto Condensed; font-weight: bold;" class="display-5 mb-0 text-center">Lecture 1</h1>
             </header>
+            <!-- new section -->
+             <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0" style="font-family: Roboto;"> <a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Log in to the remote cluster </a></h5>
+                </div>
+                <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Log in using <kbd>ssh</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ssh user@workshop2021a.vhost37.genap.ca</code></pre>
+                    </div>
+                </div>
+            </div>
+            <!-- end of new section-->
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
                     <h5 class="mb-0" style="font-family: Roboto;"> <a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Set up a work directory at <code>~/projects/lec1</code></a></h5>
@@ -104,26 +117,18 @@ diff ex2.fa ex2_2.fa</code></pre>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5">Set up a conda environment with FastQC</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5">Set up a conda environment</a></h5>
                 </div>
                 <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Create a enviroment with <kbd>conda create</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda create --name myenv</code></pre>
+                        <p>Export conda environment</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"<br> 
+export PATH="/home/hgen_share/Anaconda/envs/lec1/bin:$PATH"</code></pre>
                         <hr/>
-                        <p>Environments can be checked with <kbd>conda info</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda info --envs</code></pre>
+                        <p> Check environment is in your path </p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">echo $PATH</code></pre>
                         <hr/>
-                        <p>Activate your environment with <kbd>conda activate</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda activate myenv</code></pre>
-                        <hr/>
-                        <p>Add relevant channels with <kbd>conda config</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda config --add channels defaults
-conda config --add channels bioconda
-conda config --add channels conda-forge</code></pre>
-                        <hr/>
-                        <p>Install a package with <kbd>conda install</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda install fastqc</code></pre>
+                        <p> More information on how to set up Anaconda environment <a class="headref" href="https://docs.conda.io/projects/conda/en/stable/index.html">here</a> </p>
                     </div>
                 </div>
             </div>
@@ -136,12 +141,9 @@ conda config --add channels conda-forge</code></pre>
                         <p>Perform quality control analysis on <code>ex2.fq</code> with <kbd>fastqc</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">fastqc ex2.fq</code></pre>
                         <hr/>
-                        <p>Move results to your public folder</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec1
-mv *fastqc* ~/public_html/lec1/
-chmod -R 755 ~/public_html</code></pre>
+                        <p>Download results to your local computer using <code>scp</code></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">scp user@workshop2021a.vhost37.genap.ca:/directory/fastqc_results.html local_directory </code></pre>
                         <hr/>
-                        Check your public folder at https://hgen663.vhost37.genap.ca/~studXX
                     </div>
                 </div>
             </div>
@@ -165,10 +167,10 @@ chmod -R 755 ~/public_html</code></pre>
                 <div id="collapse8" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Inspect the reference assembly</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head /home/partage/bwa/hg19.fa</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head /home/hgen_share/bwa/hg19.fa</code></pre>
                         <hr/>
                         <p>Assign the reference file to a variable for simplicity</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ref=/home/partage/bwa</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ref=/home/hgen_share/bwa</code></pre>
                         <hr/>
                         <p>Time the alignment against hg19 with <kbd>blat</kbd> using a command of the form</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load blat/3.5
@@ -195,7 +197,7 @@ bwa mem $ref/hg19.fa ex2.fq &gt ex2.sam</code></pre>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">less ex2.sam</code></pre>
                         <hr/>
                         <p>Calculate summary statistics with <kbd>samtools flagstat</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load samtools/1.11
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load samtools/1.16.1
 samtools flagstat ex2.sam</code></pre>
                     </div>
                 </div>
