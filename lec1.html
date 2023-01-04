@@ -162,6 +162,8 @@ export PATH="/home/hgen_share/Anaconda/envs/lec1/bin:$PATH"</code></pre>
                         <p>Time the alignment against hg19 with <kbd>blat</kbd> using a command of the form</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load blat/3.5
 time blat $ref/hg19.fa sub_ex2.fa OUTPUT.psl</code></pre>
+                        <hr/>
+                        <p>More information on the .psl format found <a class="headref" href="https://genomebrowser.wustl.edu/goldenPath/help/blatSpec.html">here</a></p>
                     </div>
                 </div>
             </div>
@@ -183,6 +185,8 @@ bwa mem $ref/hg19.fa ex2.fq &gt ex2.sam</code></pre>
                         <p>Calculate summary statistics with <kbd>samtools flagstat</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load samtools/1.16.1
 samtools flagstat ex2.sam</code></pre>
+<hr/>
+                        <p>More information on interpreting flagstat statistics found <a class="headref" href="http://www.htslib.org/doc/samtools-flagstat.html">here</a></p>
                     </div>
                 </div>
             </div>
