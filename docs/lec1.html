@@ -109,9 +109,6 @@ head ex2.fq</code></pre>
                         <p>Inspect the first few lines of <code>ex2.fa</code> with <kbd>head</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head ex2.fa</code></pre>
                         <hr/>
-                        <p>Compare with alternative from <kbd>sed</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">sed -n '1~4s/^@/&gt/p;2~4p' ex2.fq &gt ex2_2.fa
-diff ex2.fa ex2_2.fa</code></pre>
                     </div>
                 </div>
             </div>
@@ -149,20 +146,7 @@ export PATH="/home/hgen_share/Anaconda/envs/lec1/bin:$PATH"</code></pre>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse7" aria-expanded="false" aria-controls="collapse7">Align the first 1 and then 10 sequences of <code>ex2.fq</code> using </a> <a class="headref" href="https://www.ncbi.nlm.nih.gov/BLAST/">BLAST</a></h5>
-                </div>
-                <div id="collapse7" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>View the first sequence and copy it</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">sed -n '2p' ex2.fq</code></pre>
-                        <hr/>
-                        For multiple sequences, BLAST accepts the FASTA format. How might you get the first 10 sequences?
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse8" aria-expanded="false" aria-controls="collapse8">Align the first 10 and then 1000 sequences of <code>ex2.fq</code> using BLAT</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse8" aria-expanded="false" aria-controls="collapse8">Align the first 10 and then 1000 sequences of <code>ex2.fa</code> using BLAT</a></h5>
                 </div>
                 <div id="collapse8" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
@@ -172,9 +156,12 @@ export PATH="/home/hgen_share/Anaconda/envs/lec1/bin:$PATH"</code></pre>
                         <p>Assign the reference file to a variable for simplicity</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ref=/home/hgen_share/bwa</code></pre>
                         <hr/>
+                        <p>Subset the first 10 and then 1000 sequences of <code>ex2.fa</code> using <code>seqkit</code> </p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">seqkit head -n 10 ex2.fa > sub_ex2.fa</code></pre>
+                        <hr/>
                         <p>Time the alignment against hg19 with <kbd>blat</kbd> using a command of the form</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load blat/3.5
-time blat $ref/hg19.fa INPUT OUTPUT.psl</code></pre>
+time blat $ref/hg19.fa sub_ex2.fa OUTPUT.psl</code></pre>
                     </div>
                 </div>
             </div>
@@ -189,9 +176,6 @@ time blat $ref/hg19.fa INPUT OUTPUT.psl</code></pre>
 bwa mem $ref/hg19.fa ex2.fq &gt ex2.sam</code></pre>
                         <hr/>
                         <p>How many reads are there in <code>ex2.fq</code>? How much faster is BWA MEM compared to BLAT?</p>
-                        <hr/>
-                        <p>What does BWA use to accelerate alignment?</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ls -lh $ref/hg19.fa*</code></pre>
                         <hr/>
                         <p>Take a look at the <code>*.sam</code> file with <kbd>less</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">less ex2.sam</code></pre>
