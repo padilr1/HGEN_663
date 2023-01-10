@@ -37,15 +37,11 @@
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec2/</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/hgen_share/lec2</code></a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Set up directory and copy over files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/projects/lec2
-cd ~/projects/lec2
-cp /home/partage/lec2/* ./
-ls -lh</code></pre>
+                        <p>Set up directory and copy over files</code></code></p>
                     </div>
                 </div>
             </div>
@@ -55,10 +51,11 @@ ls -lh</code></pre>
                 </div>
                 <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
+                        <p> <b> Remember to load modules </b> </p>
+                        <hr/>
+                        <p>Index the <code>bam</code> file</p>
+                        <hr/>
                         <p>Run <kbd>samtools flagstat</kbd> on both files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load nixpkgs/16.09 samtools/1.9
-samtools flagstat HG002.sorted.bam
-samtools flagstat ~/projects/lec1/ex2.sorted.bam</code></pre>
                         <hr/>
                         What are some of the similarities and differences?
                     </div>
@@ -70,69 +67,12 @@ samtools flagstat ~/projects/lec1/ex2.sorted.bam</code></pre>
                 </div>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Copy the file and download it from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec2
-cp HG002.sorted.bam* ~/public_html/lec2/
-chmod -R 755 ~/public_html/lec2</code></pre>
+                        <p>Download the <code>bam</code> file to your local computer as previously shown using <code>scp</code></code> </code></p>
                         <hr/>
                         <p>Check what assembly it was aligned to</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">samtools view -H HG002.sorted.bam | tail -n 1</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">samtools view -H HG002.sorted.bam | tail -n 2</code></pre>
                         <hr/>
-                        Open it in IGV with the appropriate reference around chr20:43200000-43300000.
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse4" aria-expanded="false" aria-controls="collapse4">Estimate the coverage with GATK</a></h5>
-                </div>
-                <div id="collapse4" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>Assign paths to variables for simplicity</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">REF=/home/partage/bwa
-VCF=/home/partage/vcf/hg19
-PICARD_JAR=/home/partage/utils/picard.jar
-GATK_JAR=/home/partage/utils/GenomeAnalysisTK-3.8.1.jar
-export PATH="/home/partage/utils/gatk-4.1.9.0:$PATH"
-module load java/1.8.0_192</code></pre>
-                        <hr/>
-                        <p>Calculate the depth of coverage with <kbd>DepthOfCoverage</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gatk --java-options "-Xmx4G" \
-  DepthOfCoverage \
-  --omit-depth-output-at-each-base true \
-  -R ${REF}/hg19.fa \
-  -O HG002.sorted.coverage \
-  -I HG002.sorted.bam \
-  -L chr20:43200000-43300000</code></pre>
-                        <hr/>
-                        <p>Check the results</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">column -s ',' -t HG002.sorted.coverage.sample_interval_summary</code></pre>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5">Estimate the insert size using Picard</a></h5>
-                </div>
-                <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>Picard uses R for plotting, so load it with <kbd>module load</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load r/3.5.2</code></pre>
-                        <hr/>
-                        <p>Why didn't it work? Hint: <kbd>module spider</kbd></p>
-                        <hr/>
-                        <p>Calculate the insert size distribution with <kbd>CollectInsertSizeMetrics</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">java -Xmx4G -jar ${PICARD_JAR} CollectInsertSizeMetrics \
-  -R ${REF}/hg19.fa \
-  -I HG002.sorted.bam \
-  -O HG002.sorted.metric.insertSize.tsv \
-  -H HG002.sorted.metric.insertSize.hist.pdf \
-  -LEVEL LIBRARY</code></pre>
-                        <hr/>
-                        <p>Check the results</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv *pdf ~/public_html/lec2
-chmod 644 ~/public_html/lec2/HG002.sorted.metric.insertSize.hist.pdf
-less -S HG002.sorted.metric.insertSize.tsv</code></pre>
+                        Open it in IGV with the appropriate reference
                     </div>
                 </div>
             </div>
@@ -142,22 +82,30 @@ less -S HG002.sorted.metric.insertSize.tsv</code></pre>
                 </div>
                 <div id="collapse6" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
+                      <p>Assign paths to variables for simplicity</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">REF=/home/hgen_share/bwa
+VCF=/home/hgen_share/vcf/b37
+PICARD_JAR=/home/hgen_share/utils/picard.jar
+GATK_JAR=/home/hgen_share/utils/GenomeAnalysisTK-3.8.1.jar
+export PATH="/home/hgen_share/utils/gatk-4.1.9.0:$PATH"
+module load StdEnv/2020 samtools/1.16
+module load nixpkgs/16.09 java/1.8.0_192</code></pre>
                         <p>Find regions with indels and dense in SNPs with <kbd>RealignerTargetCreator</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">java -Xmx4G -jar $GATK_JAR \
   -T RealignerTargetCreator \
-  -R $REF/hg19.fa \
-  -L chr20:43200000-43300000 \
-  --known $VCF/Mills.indels.chr20.vcf \
-  --known $VCF/1KG.indels.chr20.vcf \
+  -R $REF/b37.fa \
+  -L 20:43200000-43300000 \
+  --known $VCF/dbSNP.vcf \
+  --known $VCF/Mills.indels.vcf \
   -o realign.intervals \
   -I HG002.sorted.bam</code></pre>
                         <hr/>
                         <p>Re-align around the identified regions with <kbd>IndelRealigner</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">java -Xmx4G -jar $GATK_JAR \
   -T IndelRealigner \
-  -R $REF/hg19.fa\
-  -known $VCF/Mills.indels.chr20.vcf \
-  -known $VCF/1KG.indels.chr20.vcf \
+  -R $REF/b37.fa \
+  -known $VCF/dbSNP.vcf \
+  -known $VCF/Mills.indels.vcf \
   -targetIntervals realign.intervals \
   -o HG002.realigned.sorted.bam \
   -I HG002.sorted.bam</code></pre>
@@ -201,9 +149,7 @@ java -Xmx2g -jar $PICARD_JAR FilterSamReads \
   -SO coordinate \
   -CREATE_INDEX true</code></pre>
                         <hr/>
-                        <p>Move files to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">chmod 644 HG002.{new,old}.b*
-mv -t ~/public_html/lec2/ HG002.{new,old}.b*</code></pre>
+                        <p>Download the new and old <code>bam</code> files. What else must you download with your <code>bam</code> file for visualization?</code></p>
                         <hr/>
                         Go to chr20:43,240,000-43,260,000 to see an obvious example.
                     </div>
@@ -237,10 +183,9 @@ mv -t ~/public_html/lec2/ HG002.{new,old}.b*</code></pre>
                         <p>Establish a set of covariates for correction based on context and known SNPs with <kbd>BaseRecalibrator</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gatk --java-options "-Xmx4G" \
   BaseRecalibrator \
-  -R $REF/hg19.fa\
-  -known-sites $VCF/dbSNP.chr20.vcf \
-  -known-sites $VCF/Mills.indels.chr20.vcf \
-  -known-sites $VCF/1KG.indels.chr20.vcf \
+  -R $REF/b37.fa \
+  -known-sites $VCF/dbSNP.vcf \
+  -known-sites $VCF/Mills.indels.vcf \
   -L chr20:43200000-43300000 \
   -O HG002.sorted.dup.recalibration_report.grp \
   -I HG002.sorted.dup.bam</code></pre>
@@ -248,7 +193,7 @@ mv -t ~/public_html/lec2/ HG002.{new,old}.b*</code></pre>
                         <p>Recalibrate using the metrics calculated above with <kbd>PrintReads</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gatk --java-options "-Xmx4G" \
   ApplyBQSR \
-  -R $REF/hg19.fa \
+  -R $REF/b37.fa \
   --bqsr-recal-file HG002.sorted.dup.recalibration_report.grp \
   -O HG002.sorted.dup.recal.bam \
   -I HG002.sorted.dup.bam
@@ -265,15 +210,15 @@ mv -t ~/public_html/lec2/ HG002.{new,old}.b*</code></pre>
                         <p>Perform variant calling with <kbd>HaplotypeCaller</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gatk --java-options "-Xmx4G" \
   HaplotypeCaller \
-  -R ${REF}/hg19.fa \
+  -R $REF/b37.fa \
   -I HG002.sorted.dup.recal.bam \
   -ERC GVCF \
   -O HG002.g.vcf \
-  -L chr20:43200000-43300000 \
+  -L 20:43200000-43300000 \
   --native-pair-hmm-threads 1</code></pre>
                         <hr/>
-                        <p>Move files to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv -t ~/public_html/lec2/ HG002.g.vcf* HG002.sorted.dup.recal.b*</code></pre>
+                        <p>Download the <code>vcf</code> and recalibrated <code>bam</code> files to your local computer</p>
+                        <p> More information, including parameter details, for GATK <code>HaplotypeCaller</code> found <a class="headref" href="https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller">here</a> </p>
                     </div>
                 </div>
             </div>
@@ -283,17 +228,14 @@ mv -t ~/public_html/lec2/ HG002.{new,old}.b*</code></pre>
                 </div>
                 <div id="collapse11" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Install <kbd>peddy</kbd> using <kbd>conda</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda activate myenv
-conda install -y peddy</code></pre>
+                        <p>Export <code>conda</code> environment like previously </p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/lec2/bin:$PATH"</code></pre>
                         <hr/>
-                        <p>Run <kbd>peddy</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cp /home/partage/lec2_extra/* ./
-python -m peddy -p 2 --plot RM8392.vcf.gz RM8392.ped</code></pre>
+                        <p>Copy files from <code>/home/hgen_share/lec2_extra</code> into your own directory. Then, run <kbd>peddy</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">python -m peddy -p 2 --plot RM8392.vcf.gz RM8392.ped</code></pre>
                         <hr/>
-                        <p>Move file to public folder and view from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">chmod 644 *html
-mv *html ~/public_html/lec2/</code></pre>
+                        <p>Download the resulting <code>html</code> file</p>
                     </div>
                 </div>
             </div>
