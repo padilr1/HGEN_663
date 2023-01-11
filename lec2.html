@@ -70,9 +70,9 @@
                         <p>Download the <code>bam</code> file to your local computer as previously shown using <code>scp</code></code> </code></p>
                         <hr/>
                         <p>Check what assembly it was aligned to</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">samtools view -H HG002.sorted.bam | tail -n 2</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">samtools view -H HG002.sorted.bam | tail -n 3</code></pre>
                         <hr/>
-                        Open it in IGV with the appropriate reference
+                        Open it in IGV with the appropriate reference around 20:43200000-43300000
                     </div>
                 </div>
             </div>
@@ -151,7 +151,7 @@ java -Xmx2g -jar $PICARD_JAR FilterSamReads \
                         <hr/>
                         <p>Download the new and old <code>bam</code> files. What else must you download with your <code>bam</code> file for visualization?</code></p>
                         <hr/>
-                        Go to chr20:43,240,000-43,260,000 to see an obvious example.
+                        Go to 20:43,257,030-43,257,326 to see an obvious example.
                     </div>
                 </div>
             </div>
@@ -218,6 +218,7 @@ java -Xmx2g -jar $PICARD_JAR FilterSamReads \
   --native-pair-hmm-threads 1</code></pre>
                         <hr/>
                         <p>Download the <code>vcf</code> and recalibrated <code>bam</code> file to your local computer</p>
+                        <p> Guide to viewing <code>vcf</code> files in IGV found <a class="headref" href="https://software.broadinstitute.org/software/igv/viewing_vcf_files">here</a> </p>
                         <p> More information, including parameter details, for GATK <code>HaplotypeCaller</code> found <a class="headref" href="https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller">here</a> </p>
                     </div>
                 </div>
