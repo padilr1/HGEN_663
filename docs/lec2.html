@@ -217,29 +217,11 @@ java -Xmx2g -jar $PICARD_JAR FilterSamReads \
   -L 20:43200000-43300000 \
   --native-pair-hmm-threads 1</code></pre>
                         <hr/>
-                        <p>Download the <code>vcf</code> and recalibrated <code>bam</code> files to your local computer</p>
+                        <p>Download the <code>vcf</code> and recalibrated <code>bam</code> file to your local computer</p>
                         <p> More information, including parameter details, for GATK <code>HaplotypeCaller</code> found <a class="headref" href="https://gatk.broadinstitute.org/hc/en-us/articles/360037225632-HaplotypeCaller">here</a> </p>
                     </div>
                 </div>
             </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse11" aria-expanded="false" aria-controls="collapse11">Infer genetic ancestry based on PCA of 1000 Genomes data</a></h5>
-                </div>
-                <div id="collapse11" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>Export <code>conda</code> environment like previously </p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
-export PATH="/home/hgen_share/Anaconda/envs/lec2/bin:$PATH"</code></pre>
-                        <hr/>
-                        <p>Copy files from <code>/home/hgen_share/lec2_extra</code> into your own directory. Then, run <kbd>peddy</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">python -m peddy -p 2 --plot RM8392.vcf.gz RM8392.ped</code></pre>
-                        <hr/>
-                        <p>Download the resulting <code>html</code> file</p>
-                    </div>
-                </div>
-            </div>
-        </div>
         <!-- Bootstrap core JavaScript
     ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
