@@ -37,27 +37,12 @@
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec3/</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Take a look at <code>HG002.g.vcf</code> from last week</a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Set up directory and copy over files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load gcc/7.3.0 r/4.0.2 java/1.8.0_192
-mkdir -p ~/projects/lec3
-cd ~/projects/lec3
-cp /home/partage/lec3/* ./
-ls -lh</code></pre>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2">Take a look at <code>HG002.g.vcf</code></a></h5>
-                </div>
-                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>View the file with <kbd>less</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">less HG002.g.vcf</code></pre>
+                        <p>View the file with <code>less</code></p>
+                        <p>Create a new directory and move the <code>vcf</code> file and its index to the new directory using <code>mv</code></p>
                     </div>
                 </div>
             </div>
@@ -68,38 +53,64 @@ ls -lh</code></pre>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up variables</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">REF=/home/partage/bwa
-VCF=/home/partage/vcf
-PICARD_JAR=/home/partage/utils/picard.jar
-GATK_JAR=/home/partage/utils/GenomeAnalysisTK-3.8.1.jar
-export PATH="/home/partage/utils/gatk-4.1.9.0:$PATH"</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">REF=/home/hgen_share/bwa
+VCF=/home/hgen_share/vcf/b37
+PICARD_JAR=/home/hgen_share/utils/picard.jar
+GATK_JAR=/home/hgen_share/utils/GenomeAnalysisTK-3.8.1.jar
+export PATH="/home/hgen_share/utils/gatk-4.1.9.0:$PATH"
+module load StdEnv/2020 samtools/1.16
+module load nixpkgs/16.09 java/1.8.0_192</code></pre>
                         <hr/>
-                        <p>Apply filter</p>
+                        <p>Replace the hashtag (#) with the recommended cut-offs found <a class="headref" href="https://gatk.broadinstitute.org/hc/en-us/articles/360035890471-Hard-filtering-germline-short-variants">here</a></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gatk --java-options "-Xmx4G" \
     VariantFiltration \
     -V HG002.g.vcf \
-    -filter "QD &lt 2.0" --filter-name "QD2" \
-    -filter "QUAL &lt 30.0" --filter-name "QUAL30" \
-    -filter "SOR &gt 3.0" --filter-name "SOR3" \
-    -filter "FS &gt 60.0" --filter-name "FS60" \
-    -filter "MQ &lt 40.0" --filter-name "MQ40" \
-    -filter "MQRankSum &lt -12.5" --filter-name "MQRankSum-12.5" \
-    -filter "ReadPosRankSum &lt -8.0" --filter-name "ReadPosRankSum-8" \
+    -filter "QD &lt #" --filter-name "QD" \
+    -filter "FS &gt #" --filter-name "FS" \
+    -filter "SOR &gt #" --filter-name "SOR" \
+    -filter "MQ &lt #" --filter-name "MQ" \
+    -filter "MQRankSum &lt #" --filter-name "MQRankSum" \
+    -filter "ReadPosRankSum &lt #" --filter-name "ReadPosRankSum" \
     -O HG002.filt.g.vcf 2> >(grep -v undefined)</code></pre>
                         <hr/>
                         <p>How many variants appear ok?</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">grep -v '^#' HG002.filt.g.vcf | cut -f7 | grep 'PASS' | wc -l</code></pre>
+                        <hr/>
+                        <p>How many total variants are called? Hint: use <code>grep</code></p>
+                        <hr/>
+                        <p>Set up variables for <a class="headref" href="https://github.com/google/deepvariant">DeepVariant</a></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 apptainer/1.1.3
+mkdir -p "${PWD}/data"
+mkdir -p "${PWD}/output"
+INPUT_DIR="${PWD}/data"
+OUTPUT_DIR="${PWD}/output"
+TMPDIR=.
+cp /home/hgen_share/lec3/* ${INPUT_DIR}</code></pre>
+                        <hr/>
+                        <p>Run <a class="headref" href="https://github.com/google/deepvariant">DeepVariant</a> on the same sample from last week. <b>Note: this may take a few minutes</b></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">singularity run -B $PWD,/usr/lib/locale/ \
+   /home/hgen_share/deepvariant/deepvariant_1.4.0.sif \
+   /opt/deepvariant/bin/run_deepvariant \
+   --model_type=WGS \
+   --ref="${INPUT_DIR}"/b37.chr20.fa \
+   --reads="${INPUT_DIR}"/HG002.sorted.bam \
+   --regions "20:43200000-43300000" \
+   --output_vcf="${OUTPUT_DIR}"/HG002.dv.vcf.gz \
+   --output_gvcf="${OUTPUT_DIR}"/HG002.dv.g.vcf.gz \
+   --num_shards=1</code></pre>
+                        <hr/>
+                        <p>Unzip the <code>g.vcf</code> found in the <code>output</code> directory using <code>gunzip</code> then filter it using similar parameters as above. Compare the number of variants that pass. <b>Note: you may need to set-up your variables for GATK again</b></p>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse4" aria-expanded="false" aria-controls="collapse4">(Optional) Compare hard filtering with VQSR</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse4" aria-expanded="false" aria-controls="collapse4">(Extra) Compare hard filtering with VQSR</a></h5>
                 </div>
                 <div id="collapse4" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                       <p>Copy whole genome variant calls</p>
-                      <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cp /home/partage/lec3_extra/raw.vcf ./</code></pre>
+                      <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cp /home/hgen_share/lec3_part2 ./</code></pre>
                       <hr/>
                         <p>Since SNPs and indels need to be trained separately, start with SNPs</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gatk --java-options "-Xmx4G" \
@@ -164,53 +175,54 @@ grep -v '^#' recal.sub.vcf | cut -f7 | grep 'PASS' | wc -l</code></pre>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5">Add functional annotations with SnpEff</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse6" aria-expanded="false" aria-controls="collapse6">(Extra) Generate a VCF file with only variants that passed</a></h5>
                 </div>
-                <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                <div id="collapse6" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Use <kbd>SnpEff</kbd> with mostly default parameters</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">UTILS=/home/partage/utils
-SNPEFF_JAR=$UTILS/snpEff/snpEff.jar
-java -Xmx4G -jar $SNPEFF_JAR \
-  -c $UTILS/snpEff/snpEff.config \
-  -i vcf -o vcf -v hg19 \
-  ex.vcf &gt ex.snpeff.vcf</code></pre>
+                        <p>Set up <kbd>bcftools</kbd>to filter PASS variants</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 gcc/9.3.0 bcftools/1.16</code></pre>
                         <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec3
-mv *html ~/public_html/lec3/
-chmod -R 755 ~/public_html/lec3</code></pre>
+                        <p>Run <kbd>bcftools</kbd>. The input file can be the VCF file produced from either variant caller</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">bcftools view -f 'PASS,.' -O v -o output_filename input_file </code></pre>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse6" aria-expanded="false" aria-controls="collapse6">(Optional) Add functional annotations with VEP</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse6" aria-expanded="false" aria-controls="collapse6">(Extra) Use <code>VariantsToTable</code>to get a tsv file of variants</a></h5>
                 </div>
                 <div id="collapse6" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Install VEP with <kbd>conda</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda create -y -n lec3 ensembl-vep sqlite
-conda activate lec3</code></pre>
+                        <p><code>VariantsToTable</code>, by default, only extracts variants that passed filtering. Use the --show-filtered parameter to show all variants.</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">REF=/home/hgen_share/bwa
+gatk VariantsToTable \
+    -R $REF/b37.fa \
+    -V input_vcf \
+    -F CHROM -F POS -F FILTER -F TYPE -GF AD -GF DP \
+    --show-filtered \
+    -O output_filename.tsv</code></pre>
+    <p>You may need to reload <code>modules</code>for GATK again</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5">Add functional annotations with SnpEff</a></h5>
+                </div>
+                <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Copy whole genome variant calls </p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code>cp /home/hgen_share/lec3_part2/* ./</code></pre>
                         <hr/>
-                        <p>Use <kbd>VEP</kbd> with mostly default parameters</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">vep -i ex.vcf \
-  --cache \
-  --offline \
-  --dir /home/partage/.vep/ \
-  --sift b \
-  --polyphen b \
-  --symbol \
-  --numbers \
-  --biotype \
-  --total_length \
-  -o ex.vep.vcf \
-  --vcf \
-  --fields Consequence,Codons,Amino_acids,Gene,SYMBOL,Feature,EXON,PolyPhen,SIFT,Protein_position,BIOTYPE</code></pre>
+                        <p>Use <kbd>SnpEff</kbd> with mostly default parameters</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">UTILS=/home/partage/utils
+SNPEFF_JAR=/home/hgen_share/utils/snpEff/snpEff.jar
+java -Xmx4G -jar $SNPEFF_JAR \
+  -c /home/hgen_share/utils/snpEff/snpEff.config \
+  -i vcf -o vcf -v hg19 \
+  ex.vcf &gt ex.snpeff.vcf</code></pre>
                         <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv *html ~/public_html/lec3/
-chmod 644 ~/public_html/lec3/*html</code></pre>
+                        <p>Download <code>.html</code> results file to your local computer using <code>scp</code></p>
                     </div>
                 </div>
             </div>
@@ -221,24 +233,12 @@ chmod 644 ~/public_html/lec3/*html</code></pre>
                 <div id="collapse7" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                       <p>Add the directory containing <kbd>gemini</kbd></p>
-                      <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/partage/bin:$PATH</code></pre>
+                      <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/hgen_share/utils/gemini/anaconda/bin:$PATH</code></pre>
                       <hr/>
                         <p>Generate annotated database with <kbd>gemini</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gemini load --cores 4 --tempdir $PWD -t snpEff -v ex.snpeff.vcf ex.snpeff.db</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load mugqic/gemini/0.20.1
+gemini load --cores 4 --tempdir $PWD -t snpEff -v ex.snpeff.vcf ex.snpeff.db</code></pre>
                         <hr/>
-                        <p>Try to query something using SQL syntax</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gemini query -q "SELECT gene from variants \
-  WHERE clinvar_disease_name is not NULL and aaf_esp_ea &lt= 0.01" \
-  ex.snpeff.db</code></pre>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse8" aria-expanded="false" aria-controls="collapse8">(Optional) Convert annotated database to spreadsheet format</a></h5>
-                </div>
-                <div id="collapse8" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
                         <p>Dump database to plain-text csv using <kbd>sqlite</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">db=ex.snpeff.db
 t=($(sqlite3 $db ".tables"))
@@ -253,12 +253,12 @@ for i in "${t[@]}"; do
   echo "$i.csv generated"
 done</code></pre>
                         <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv *csv ~/public_html/lec3/</code></pre>
+                        <p>Download <code>csv</code> file</p>
+                        <hr/>
+                        <p> For more details regarding columns: <a class="headref" href="https://gemini.readthedocs.io/en/latest/content/database_schema.html">GEMINI database</a> </p>
                     </div>
                 </div>
             </div>
-        </div>
         <!-- Bootstrap core JavaScript
     ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
