@@ -37,18 +37,13 @@
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec4/</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy files for part 1 from <code>/home/hgen_share/lec4_pt1</code></a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up directory and copy over files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 gcc/9.3.0 openmpi/4.0.3 hdf5/1.10.6 minimap2/2.17 fastqc/0.11.9 samtools/1.11 mugqic/qualimap/2.2.1 quast/5.0.2 mafft/7.471 emboss/6.6.0 fasttree/2.1.11
-conda activate /home/partage/envs/ont
-export PATH=/home/partage/ont-guppy-cpu/bin:$PATH
-mkdir -p ~/projects/lec4
-cd ~/projects/lec4
-cp -r /home/partage/lec4/* ./
-ls -lh</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 gcc/9.3.0 openmpi/4.0.3 hdf5/1.10.6 minimap2/2.17 fastqc/0.11.9 samtools/1.11 mugqic/qualimap/2.2.1 mafft/7.471 emboss/6.6.0 fasttree/2.1.11 mugqic/pycoQC/2.5.2
+export PATH=/home/hgen_share/ont-guppy-cpu/bin:$PATH</code></pre>
                     </div>
                 </div>
             </div>
@@ -72,12 +67,7 @@ ls -lh</code></pre>
                 </div>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Show configurations available to <kbd>guppy_basecaller</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">guppy_basecaller --print_workflows</code></pre>
-                        <hr/>
-                        <p>Which one should you use for a FLO-MIN106 flowcell with the LSK109 kit?</p>
-                        <hr/>
-                        <p>Proceed to basecall. This will take a while with just 1 CPU thread, and since the output is provided already, you can terminate it prematurely with <kbd>Ctrl-C</kbd></p>
+                        <p>This will take a while with just 1 CPU thread, and since the output is provided already, you can terminate it prematurely with <kbd>Ctrl-C</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">guppy_basecaller \
   --compress_fastq \
   -i ex.fast5 \
@@ -90,7 +80,7 @@ ls -lh</code></pre>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse4" aria-expanded="false" aria-controls="collapse4">Assess quality with pycoQC & FastQC</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse4" aria-expanded="false" aria-controls="collapse4">(Extra) Assess quality with pycoQC & FastQC</a></h5>
                 </div>
                 <div id="collapse4" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
@@ -100,34 +90,28 @@ ls -lh</code></pre>
                         <p>Run <kbd>FastQC</kbd> with the provided sequences</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">fastqc ex.fq</code></pre>
                         <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec4
-mv *html ~/public_html/lec4/
-chmod -R 755 ~/public_html/lec4</code></pre>
+                        <p>Download pycoQC <code>html</code> report</p>
                         <hr/>
-                        <p>Compare with another report <a href="https://adrienleger.com/pycoQC/pycoQC/results/Guppy-2.3_basecall-1D_alignment-DNA.html" target="_blank">here</a></p>
+                        <p>Compare with another report <a href="https://a-slide.github.io/pycoQC/pycoQC/results/Guppy-2.3_basecall-1D_alignment-DNA.html" target="_blank">here</a></p>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5">Rectify quality issues by trimming</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5">(Extra) Rectify quality issues by trimming</a></h5>
                 </div>
                 <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Trim adapters with <kbd>Porechop</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">porechop -i ex.fq -t 1 -v 2 -o chopped.fq</code></pre>
                         <hr/>
-                        <p>Is it better now? https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">fastqc chopped.fq
-mv chopped_fastqc.html ~/public_html/lec4/
-chmod 644 ~/public_html/lec4/chopped_fastqc.html</code></pre>
+                        <p>Is it better now? Run fastQC on trimmed <code>fastq</code><p>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse6" aria-expanded="false" aria-controls="collapse6">Assess error profile after alignment</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse6" aria-expanded="false" aria-controls="collapse6">(Extra) Assess error profile after alignment</a></h5>
                 </div>
                 <div id="collapse6" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
@@ -138,9 +122,7 @@ samtools index ex.bam</code></pre>
                         <p>Summarize alignment results with <kbd>Qualimap</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">qualimap bamqc -bam ex.bam --java-mem-size=1G -nw 5000 -nt 1 -c -outdir qualimap/</code></pre>
                         <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv qualimap ~/public_html/lec4/
-chmod -R 755 ~/public_html/lec4/qualimap</code></pre>
+                        <p>Download results to your local computer</p>
                         <hr/>
                         <p>Compare with the <a href="https://rawgit.com/kokonech/kokonech.github.io/master/qualimap/HG00096.chr20_bamqc/qualimapReport.html" target="_blank">report</a> from a typical Illumina run</p>
                     </div>
@@ -148,15 +130,20 @@ chmod -R 755 ~/public_html/lec4/qualimap</code></pre>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse7" aria-expanded="false" aria-controls="collapse7">(Optional) Hybrid assembly with Unicycler</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse7" aria-expanded="false" aria-controls="collapse7">Hybrid assembly with Unicycler</a></h5>
                 </div>
                 <div id="collapse7" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                      <p>Copy files over</p>
-                      <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cp /home/partage/lec4_extra/*fq ./</code></pre>
+                      <p>Set up variables and copy over files for part 2</p>
+                      <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/hgen_share/utils/SPAdes-3.15.5-Linux/bin:$PATH
+export PATH=/home/hgen_share/utils/ncbi-blast-2.13.0+/bin:$PATH
+export PATH=/home/hgen_share/utils/racon/build/bin:$PATH
+cp /home/hgen_share/lec4_pt2/* ./</code></pre>
                       <hr/>
-                      <p>Run <kbd>Unicycler</kbd> using boths short- and long-reads</p>
+                      <p>Run <code>Unicycler</code> using boths short- and long-reads. For hybrid assemblies, the direct long-read bridging step of the pipeline can take a while to complete. Thus, the output is provided for you. You can terminate it prematurely with <code>Ctrl-C</code></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">unicycler -1 Illumina_F.fq -2 Illumina_R.fq -l ONT.fq -t 20 --min_fasta_length 10000 --linear_seqs 1 -o unicycler</code></pre>
+                        <hr/>
+                        <p>The output can be found in <kbd>/home/hgen_share/lec4_pt2/unicycler</kbd></p>
                     </div>
                 </div>
             </div>
@@ -166,102 +153,48 @@ chmod -R 755 ~/public_html/lec4/qualimap</code></pre>
                 </div>
                 <div id="collapse8" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Visualize contigs with <kbd>Bandage</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">Bandage image unicycler/assembly.gfa assembly.jpg</code></pre>
-                        <hr/>
                         <p>Use <kbd>QUAST</kbd> to create a summary report</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">quast.py -t 1 -o quast -R wuhCor1.fa -g wuhCor1.gff3 unicycler/assembly.fasta</code></pre>
-                        <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv -t ~/public_html/lec4/ quast assembly.jpg
-chmod -R 755 ~/public_html/lec4/</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load mugqic/Quast/5.0.2
+quast.py -t 1 -o quast -R wuhCor1.fa -g wuhCor1.gff3 unicycler/assembly.fasta</code></pre>
                         <hr/>
                         <p>Compare with a <a href="http://cab.cc.spbu.ru/quast/paper/h.sapiens_chr14/" target="_blank">report</a> on eukaryotic assemblies</p>
                         <hr/>
-                        <p><a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi" target="_blank">BLAST</a> the top 2 contigs (<code>contig1.fa</code> and <code>contig2.fa</code>)</p>
+                        <p><a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi" target="_blank">BLAST</a> the top 2 contigs (<code>contig1.fa</code> and <code>contig2.fa</code>) found in the <code>unicycler</code> output directory</p>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9">Align the CDS for S proteins from various species in <code>s.fna</code></a></h5>
-                </div>
-                <div id="collapse9" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>Translate nucleotides sequences into those of amino acids with <kbd>transeq</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">transeq s.fna s.faa</code></pre>
-                        <hr/>
-                        <p>Align protein sequences using <kbd>mafft</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mafft --auto s.faa > s.align.faa</code></pre>
-                        <hr/>
-                        <p>Use aligned protein sequences to generate aligned nucleic coding regions via <kbd>tranalign</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">tranalign s.fna s.align.faa s.align.fna</code></pre>
-                        <hr/>
-                        <p>Browser results from NCBI's <a href="https://www.ncbi.nlm.nih.gov/projects/msaviewer/" target="_blank">Multiple Sequence Alignment Viewer</a></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv s.align.fna ~/public_html/lec4/
-chmod 644 ~/public_html/lec4/s.align.fna</code></pre>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse10" aria-expanded="false" aria-controls="collapse10">Use HyPhy selection using a subset of S CDSs listed in <code>s.sub.fna</code></a></h5>
-                </div>
-                <div id="collapse10" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>Align cDNA sequences like before</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">transeq s.sub.fna s.sub.faa
-mafft --auto s.sub.faa > s.sub.align.faa
-tranalign s.sub.fna s.sub.align.faa s.sub.align.fna</code></pre>
-                        <hr/>
-                        <p>Infer phylogeny with <kbd>FastTree</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">FastTree -gtr -nt s.sub.align.fna > s.sub.align.nhx</code></pre>
-                        <hr/>
-                        <p>Explore the presence of diversifying selection using <kbd>aBSREL</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">hyphy absrel --alignment s.sub.align.fna --tree s.sub.align.nhx</code></pre>
-                        <hr/>
-                        <p>(Optional) Identify recombination breakpoints with GARD</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">hyphy gard s.sub.align.fna</code></pre>
-                        <hr/>
-                        <p>Visualize results (<code>*.json</code> files) using <a href="http://vision.hyphy.org/" target="_blank">http://vision.hyphy.org/</a></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv *json ~/public_html/lec4/
-chmod 644 ~/public_html/lec4/*json</code></pre>
-                        <hr/>
-                        <p>Look at the <a href="https://observablehq.com/@spond/revised-sars-cov-2-analytics-page" target="_blank">results</a> of selection analysis enabled by a much larger dataset</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse11" aria-expanded="false" aria-controls="collapse11">(Optional) Place newly assembled viral genomes in a global context</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse11" aria-expanded="false" aria-controls="collapse11">Place newly assembled viral genomes in a global context</a></h5>
                 </div>
                 <div id="collapse11" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Activate the nextstrain environment</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda deactivate
-conda activate /home/partage/envs/nextstrain
-export LD_LIBRARY_PATH=/home/partage/envs/nextstrain/lib:$LD_LIBRARY_PATH</code></pre>
+                        <p>Set up variables for nextstrain environment</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/nextstrain_V2/bin:$PATH"</code></pre>
                         <hr/>
-                        <p>Set up directory with example data</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cd ~/projects/lec4/
-git clone https://github.com/nextstrain/ncov.git
-gunzip ncov/data/example_sequences.fasta.gz</code></pre>
+                        <p>Copy the tutorial dataset for SARS-Cov2 provided by nextstrain</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cp -r /home/hgen_share/ncov ./</code></pre>
                         <hr/>
-                        <p>Add pre-computed assemblies along with their metadata, which you could take a peek at as well</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cat /home/partage/lec4_extra/consensus_sequences.fasta >> ncov/data/example_sequences.fasta
-cat /home/partage/lec4_extra/metadata.tsv >> ncov/data/example_metadata.tsv</code></pre>
+                        <p>Take a look at the <kbd>/data</kbd> sub-directory. Inspect the data files with <code>less</code> to get an impression of what data needs to be provided for nextstrain. Unzip the fasta file using <code>gunzip</code></p>
                         <hr/>
-                        <p>Run pipeline</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cd ncov
-snakemake --cores 20 --profile ./my_profiles/getting_started</code></pre>
-                        <hr/>
-                        <p>Start visualization server</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">nextstrain view --port 4000 auspice/</code></pre>
+                        <p>Go back to the main <kbd>/ncov</kbd> directory and run the basic nextstrain workflow</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">snakemake --cores 14 --profile ./my_profiles/getting_started</code></pre>
                         <hr/>
                         <p>On your own computer, not the cluster, establish a tunnel to server. Here you should use your own username</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ssh -L 8989:localhost:4000 studXX@hgen663.vhost37.genap.ca</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ssh -L 4000:localhost:4000 studXX@workshop2021a.vhost37.genap.ca</code></pre>
                         <hr/>
-                        <p>Now you can visit it in your browser at <a href="http://localhost:8989" target="_blank">http://localhost:8989</a>. If port 4000 is not available (i.e., another student is using it), then you can change both mentions of it to something else (e.g., 4001). Similarly, if port 8989 on your own computer is unavailable, you can also change that</p>
+                        <p>Start the auspice server to view the results using your credentials</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">auspice view --datasetDir /home/studXX/projects/lec4/ncov/auspice</code></pre>
+                        <hr/>
+                        <p>You can visit the results page at <a href="http://localhost:4000" target="_blank">http://localhost:4000</a> in your browser. If you're done inspecting the results, terminate the auspice server with <code>Ctrl+C</code></p>
+                        <hr/>
+                        <p>Include our own recently assembled data. Use <kbd>consensus_sequences.fasta</kbd> and <kbd>metadata.tsv</kbd> from <code>/home/hgen_share/lec4_pt2</code>. Append the fasta file to the example sequences (you can also inspect the fasta file with <code>less</code>)</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cat consensus_sequences.fasta >> data/example_sequences.fasta</code></pre>
+                        <hr/>
+                        <p>Do the same for the metadata file. Append it to <kbd>example_metadata.tsv</kbd></p>
+                        <hr/>
+                        <p>Run the same steps as above. Where does our data reside in the phylogeny?</p>
                     </div>
                 </div>
             </div>
