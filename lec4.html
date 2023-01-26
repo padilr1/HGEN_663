@@ -43,6 +43,8 @@
                     <div class="card-body">
                         <p>Set up directory and copy over files</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 gcc/9.3.0 openmpi/4.0.3 hdf5/1.10.6 minimap2/2.17 fastqc/0.11.9 samtools/1.11 mugqic/qualimap/2.2.1 mafft/7.471 emboss/6.6.0 fasttree/2.1.11 mugqic/pycoQC/2.5.2
+export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/longread_env/bin:$PATH"
 export PATH=/home/hgen_share/ont-guppy-cpu/bin:$PATH</code></pre>
                     </div>
                 </div>
@@ -68,13 +70,14 @@ export PATH=/home/hgen_share/ont-guppy-cpu/bin:$PATH</code></pre>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>This will take a while with just 1 CPU thread, and since the output is provided already, you can terminate it prematurely with <kbd>Ctrl-C</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">guppy_basecaller \
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conf="dna_r9.4.1_450bps_hac"
+guppy_basecaller \
   --compress_fastq \
   -i ex.fast5 \
   -s basecall/ \
   --cpu_threads_per_caller 1 \
   --num_callers 1 \
-  -c ${conf}.cfg</code></pre>
+  -c dna_r9.4.1_450bps_hac.cfg</code></pre>
                     </div>
                 </div>
             </div>
@@ -138,6 +141,8 @@ samtools index ex.bam</code></pre>
                       <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/hgen_share/utils/SPAdes-3.15.5-Linux/bin:$PATH
 export PATH=/home/hgen_share/utils/ncbi-blast-2.13.0+/bin:$PATH
 export PATH=/home/hgen_share/utils/racon/build/bin:$PATH
+export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/longread_env/bin:$PATH"
 cp /home/hgen_share/lec4_pt2/* ./</code></pre>
                       <hr/>
                       <p>Run <code>Unicycler</code> using boths short- and long-reads. For hybrid assemblies, the direct long-read bridging step of the pipeline can take a while to complete. Thus, the output is provided for you. You can terminate it prematurely with <code>Ctrl-C</code></p>
@@ -181,13 +186,14 @@ export PATH="/home/hgen_share/Anaconda/envs/nextstrain_V2/bin:$PATH"</code></pre
                         <p>Go back to the main <kbd>/ncov</kbd> directory and run the basic nextstrain workflow</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">snakemake --cores 14 --profile ./my_profiles/getting_started</code></pre>
                         <hr/>
-                        <p>On your own computer, not the cluster, establish a tunnel to server. Here you should use your own username</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ssh -L 4000:localhost:4000 studXX@workshop2021a.vhost37.genap.ca</code></pre>
+                        <p>On your own computer, not the cluster, establish a tunnel to server. Here you should use your own username.Also, replace the hashtag with any two numbers to land on a port that is not busy</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ssh -L 40##:localhost:40## studXX@workshop2021a.vhost37.genap.ca</code></pre>
                         <hr/>
-                        <p>Start the auspice server to view the results using your credentials</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">auspice view --datasetDir /home/studXX/projects/lec4/ncov/auspice</code></pre>
+                        <p>Start the auspice server to view the results using your credentials. If the PORT is busy, change to another port by exporting the port number as indicated below</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PORT=40##
+auspice view --datasetDir /home/studXX/projects/lec4/ncov/auspice</code></pre>
                         <hr/>
-                        <p>You can visit the results page at <a href="http://localhost:4000" target="_blank">http://localhost:4000</a> in your browser. If you're done inspecting the results, terminate the auspice server with <code>Ctrl+C</code></p>
+                        <p>You can visit the results page at <a href="http://localhost:4000" target="_blank">http://localhost:40##</a> in your browser. If you're done inspecting the results, terminate the auspice server with <code>Ctrl+C</code></p>
                         <hr/>
                         <p>Include our own recently assembled data. Use <kbd>consensus_sequences.fasta</kbd> and <kbd>metadata.tsv</kbd> from <code>/home/hgen_share/lec4_pt2</code>. Append the fasta file to the example sequences (you can also inspect the fasta file with <code>less</code>)</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cat consensus_sequences.fasta >> data/example_sequences.fasta</code></pre>
