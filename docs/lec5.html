@@ -37,15 +37,11 @@
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec5/</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/hgen_share/lec5</code></a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up directory and copy over files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/projects/lec5
-cd ~/projects/lec5
-cp /home/partage/lec5/* ./
-ls -lh</code></pre>
                     </div>
                 </div>
             </div>
@@ -58,34 +54,21 @@ ls -lh</code></pre>
                         <p>Check out the first few lines from the GTF file</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head gencode.v36.annotation.chr1.gtf | column -t -s $'\t' | less -S</code></pre>
                         <hr/>
-                        <p>Convert to genePred</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/partage/bin:$PATH
-gtfToGenePred gencode.v36.annotation.chr1.gtf gencode.v36.annotation.chr1.genePred
-head gencode.v36.annotation.chr1.genePred | column -t -s $'\t' | less -S</code></pre>
-                        <hr/>
-                        <p>Convert to BED12</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">genePredToBed gencode.v36.annotation.chr1.genePred gencode.v36.annotation.chr1.bed
-head gencode.v36.annotation.chr1.bed | column -t -s $'\t' | less -S</code></pre>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2">Align <code>ex.fq</code> with BWA MEM and STAR, then compare</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2">Align <code>ex.fq</code>with STAR</a></h5>
                 </div>
                 <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up variables</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 gcc/9.3.0 openmpi/4.0.3 salmon/1.3.0 star/2.7.5a samtools/1.11 java/13.0.2 bwa/0.7.17 subread/2.0.1
-BASE=/home/partage
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 gcc/9.3.0 openmpi/4.0.3 salmon/1.3.0 star/2.7.5a samtools/1.11 java/13.0.2 subread/2.0.1
+BASE=/home/hgen_share
 PICARD_JAR=$BASE/utils/picard.jar</code></pre>
                         <hr/>
-                        <p>Align with <kbd>bwa</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">bwa mem $BASE/bwa/hg38.chr1.fa ex.fq | samtools sort - &gt ex.bam
-samtools index ex.bam
-samtools flagstat ex.bam &gt ex.flagstat</code></pre>
-                        <hr/>
-                        <p>Align with <kbd>STAR</kbd></p>
+                        <p>Align with <a class="headref" href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR</a></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p results
 STAR --genomeDir $BASE/star/chr1 \
   --runThreadN 1 \
@@ -98,31 +81,9 @@ STAR --genomeDir $BASE/star/chr1 \
   --outFilterMatchNminOverLread 0.3 \
   --twopassMode Basic</code></pre>
                         <hr/>
-                        <p>Take a look at the summary statistics with <kbd>less</kbd> and compare with this <a href="https://www.ecseq.com/support/benchmark.html" target="_blank">benchmark</a></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">less ex.flagstat
-less results/ex_Log.final.out</code></pre>
+                        <p>Take a look at the summary statistics with <kbd>less</kbd> </p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">less results/ex_Log.final.out</code></pre>
                         <hr/>
-                        <p>Compare alignment summary metrics generated by <kbd>picard</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">java -jar $PICARD_JAR CollectRnaSeqMetrics \
-  I=ex.bam \
-  O=bwa.txt \
-  REF_FLAT=hg38.refFlat.chr1.txt \
-  STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
-  RIBOSOMAL_INTERVALS=hg38.rRNA.chr1.interval_list
-&nbsp
-java -jar $PICARD_JAR CollectRnaSeqMetrics \
-  I=results/ex_Aligned.sortedByCoord.out.bam \
-  O=star.txt \
-  REF_FLAT=hg38.refFlat.chr1.txt \
-  STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
-  RIBOSOMAL_INTERVALS=hg38.rRNA.chr1.interval_list
-&nbsp
-sed -n '7,8p' bwa.txt | transpose -t | column -t
-sed -n '7,8p' star.txt | transpose -t | column -t</code></pre>
-                        <hr/>
-                        Compare example QC report for
-                        <a href="https://multiqc.info/examples/rna-seq/multiqc_report.html" target="_blank">RNA-seq</a> vs
-                        <a href="https://multiqc.info/examples/wgs/multiqc_report.html" target="_blank">WGS</a>
                     </div>
                 </div>
             </div>
@@ -132,23 +93,20 @@ sed -n '7,8p' star.txt | transpose -t | column -t</code></pre>
                 </div>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Run <kbd>featureCounts</kbd></p>
+                        <p>Run <a class="headref" href="https://subread.sourceforge.net/SubreadUsersGuide.pdf">featureCounts</a></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">featureCounts -T 4 -s 2 \
   -a gencode.v36.annotation.chr1.gtf \
   -o ex_featurecounts.txt \
   results/ex_Aligned.sortedByCoord.out.bam</code></pre>
                         <hr/>
-                        <p>Run <kbd>salmon</kbd></p>
+                        <p>Run <a class="headref" href="https://salmon.readthedocs.io/en/latest/">Salmon</a></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">salmon quant -i $BASE/salmon/chr1 \
  -l A \
  -r ex.fq \
  -o ex_salmon \
  --seqBias</code></pre>
                         <hr/>
-                        <p>Copy results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec5
-cp -t ~/public_html/lec5 ex_salmon/quant.sf ex_featurecounts.txt
-chmod -R 755 ~/public_html/lec5</code></pre>
+                        <p>Download the output from the gene expression counters</p>
                     </div>
                 </div>
             </div>
