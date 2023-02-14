@@ -37,15 +37,11 @@
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec7/</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/hgen_share/lec7</code></a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up directory and copy over files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/projects/lec7
-cd ~/projects/lec7
-cp -r /home/partage/lec7/* ./
-ls -lh</code></pre>
                     </div>
                 </div>
             </div>
@@ -55,7 +51,7 @@ ls -lh</code></pre>
                 </div>
                 <div id="collapse9" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Check out the first few lines from the abrdiged results file</p>
+                        <p>Check out the first few lines from the abridged results file</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">column -t fusion/kd3.fusion_predictions.abridged.tsv | less -S</code></pre>
                     </div>
                 </div>
@@ -67,8 +63,7 @@ ls -lh</code></pre>
                 <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up variables</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/partage/bin:$PATH
-module load StdEnv/2020 gcc/9.3.0 stringtie/2.1.3
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 stringtie/2.1.5
 awk '$1=="chr6"' gencode.gtf > gencode.chr6.gtf</code></pre>
                         <hr/>
                         <p>Apply <kbd>stringtie</kbd> without and without reference annotations</p>
@@ -80,11 +75,13 @@ stringtie --rf -G gencode.chr6.gtf -o denovo/ct1.gtf ct1.bam</code></pre>
 stringtie --merge -o guided.gtf guided/*.gtf</code></pre>
                         <hr/>
                         <p>Compare with reference annotations using <kbd>gffcompare</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">gffcompare -r gencode.chr6.gtf -o denovo denovo.gtf
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load nixpkgs/16.09 gffcompare/0.11.6
+gffcompare -r gencode.chr6.gtf -o denovo denovo.gtf
 gffcompare -r gencode.chr6.gtf -o guided guided.gtf</code></pre>
                         <hr/>
                         Check out the summary
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cpr -m -t denovo.stats guided.stats</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">less denovo.stats
+less guided.stats</code></pre>
                         <hr/>
                         How many novel transcripts did we find?
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">awk '$3=="transcript"' guided.annotated.gtf| grep 'class_code "u"' | wc -l </code></pre>
@@ -98,22 +95,23 @@ gffcompare -r gencode.chr6.gtf -o guided guided.gtf</code></pre>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up environment</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda activate /home/partage/envs/leafcutter
-export R_LIBS=/home/partage/envs/leafcutter/R_LIBS
-LCDIR=/home/partage/envs/leafcutter/3f875f1</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/r_env/bin:$PATH"</code></pre>
                         <hr/>
                         <p>Parse out junctions with <kbd>regtools</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">for b in *.bam; do regtools junctions extract -a 8 -m 50 -M 500000 $b -o $b.junc -s 1 ; done</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">for b in *.bam; do regtools junctions extract -a 8 -m 50 -M 500000 -s RF $b -o $b.junc; done</code></pre>
                         <hr/>
-                        <p>Note down sample information for downstream use</p>
+                        <p>Note sample information for downstream use</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ls -A1 *junc > juncfiles
 sed 's/.junc//' juncfiles \
   | awk -v OFS='\t' '{print $1, substr($1,0,2) == "ct" ? "control" : "knockdown"}' \
   > groupfiles</code></pre>
                         <hr/>
                         <p>Run <kbd>LeafCutter</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">python $LCDIR/clustering/leafcutter_cluster_regtools.py -j juncfiles -m 50 -l 500000
-$LCDIR/scripts/leafcutter_ds.R \
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/r_env_V3/bin:$PATH"
+python /home/hgen_share/utils/leafcutter/clustering/leafcutter_cluster_regtools.py -j juncfiles -m 50 -l 500000
+Rscript /home/hgen_share/utils/leafcutter/scripts/leafcutter_ds.R \
   --num_threads 1 \
   --exon_file exons.txt.gz \
   --min_samples_per_intron 3 \
@@ -121,7 +119,7 @@ $LCDIR/scripts/leafcutter_ds.R \
   groupfiles</code></pre>
                         <hr/>
                         <p>Pack up results for visualization</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">$LCDIR/leafviz/prepare_results.R \
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">Rscript /home/hgen_share/utils/leafcutter/leafviz/prepare_results.R \
   --meta_data_file groupfiles \
   --code KD \
   leafcutter_perind_numers.counts.gz \
@@ -129,22 +127,31 @@ $LCDIR/scripts/leafcutter_ds.R \
   leafcutter_ds_effect_sizes.txt \
   hg38 \
   -o viz.rda</code></pre>
+                    <hr/>
+                    <p>Download <code>viz.rda</code> to your local computer</p>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse5" aria-expanded="false" aria-controls="collapse5"> (Optional) Compute coverage track for <code>kd1.bam</code> with bamCoverage</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Alternatively, we can run rMATS</code></a></h5>
                 </div>
-                <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Run <kbd>bamCompare</kbd> selecting just reads from one strand</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load mugqic/deepTools/3.5.0
-bamCoverage -b kd1.bam -o kd1.plus.bw --region chr6 --filterRNAstrand forward </code></pre>
+                        <p>Set up directory and prepare files for input into <a class="headref" href="https://github.com/Xinglab/rmats-turbo/blob/v4.1.2/README.md">rMATS</a></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/rmats/bin:$PATH"
+mkdir output_rmats
+mkdir tmp_rmats
+echo "/home/hgen_share/lec7/ct1.bam,/home/hgen_share/lec7/ct2.bam,/home/hgen_share/lec7/ct3.bam" > control_list.txt
+echo "/home/hgen_share/lec7/kd1.bam,/home/hgen_share/lec7/kd2.bam,/home/hgen_share/lec7/kd3.bam" > kd_list.txt</code></pre>
+                        <hr/>
+                        <p>Run rMATS</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">python /home/hgen_share/Anaconda/envs/rmats/rMATS/rmats.py --b1 control_list.txt --b2 kd_list.txt --gtf /home/hgen_share/ref/hg38/ref-transcripts.gtf --od output_rmats -t paired --libType fr-firststrand --readLength 150 --nthread 1 --tmp tmp_rmats --variable-read-length</code></pre>
+                        <hr/>
                     </div>
                 </div>
             </div>
-        </div>
         <!-- Bootstrap core JavaScript
     ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
