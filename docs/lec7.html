@@ -107,7 +107,7 @@ sed 's/.junc//' juncfiles \
   | awk -v OFS='\t' '{print $1, substr($1,0,2) == "ct" ? "control" : "knockdown"}' \
   > groupfiles</code></pre>
                         <hr/>
-                        <p>Run <kbd>LeafCutter</kbd></p>
+                        <p>Run <a class="headref" href="https://davidaknowles.github.io/leafcutter/articles/Usage.html">leafCutter</a></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
 export PATH="/home/hgen_share/Anaconda/envs/r_env_V3/bin:$PATH"
 python /home/hgen_share/utils/leafcutter/clustering/leafcutter_cluster_regtools.py -j juncfiles -m 50 -l 500000
