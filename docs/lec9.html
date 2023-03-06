@@ -37,21 +37,17 @@
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec9/</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/hgen_share/lec9</code></a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up directory and copy over files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/projects/lec9
-cd ~/projects/lec9
-cp -r /home/partage/lec9/* ./
-ls -lh</code></pre>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9"> Use MethPipe to identify PMDs and DMRs</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9"> Use <code>dnmtools</code> to identify partially methylated domains (PMDs) and differentially methylated regions (DMRs)</a></h5>
                 </div>
                 <div id="collapse9" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
@@ -59,25 +55,22 @@ ls -lh</code></pre>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head GSC.chr3.meth</code></pre>
                         <hr/>
                         <p>Set up variables</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/partage/bin:$PATH</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH=/home/hgen_share/utils/bin:$PATH</code></pre>
                         <hr/>
                         <p>Calculate differential methylation with <kbd>methdiff</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">methdiff -o chr3.methdiff EpiLC.chr3.meth GSC.chr3.meth</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools diff -o chr3.methdiff EpiLC.chr3.meth GSC.chr3.meth</code></pre>
                         <hr/>
                         <p>Identify HMRs with <kbd>hmr</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">hmr -o GSC.chr3.hmr GSC.chr3.meth
-hmr -o EpiLC.chr3.hmr EpiLC.chr3.meth</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools hmr -o GSC.chr3.hmr GSC.chr3.meth
+dnmtools hmr -o EpiLC.chr3.hmr EpiLC.chr3.meth</code></pre>
                         <hr/>
                         <p>Call DMRs usign <kbd>dmr</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dmr chr3.methdiff EpiLC.chr3.hmr GSC.chr3.hmr DMR_EpiLC_lt_GSC.bed DMR_GSC_lt_EpiLC.bed</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools dmr chr3.methdiff EpiLC.chr3.hmr GSC.chr3.hmr DMR_EpiLC_lt_GSC.bed DMR_GSC_lt_EpiLC.bed</code></pre>
                         <hr/>
                         <p>Determine PMDs with <kbd>pmd</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">pmd -o GSC.chr3.pmd.bed GSC.chr3.meth</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools pmd -o GSC.chr3.pmd.bed GSC.chr3.meth</code></pre>
                         <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec9
-mv -t ~/public_html/lec9/ *bw *bed
-chmod -R 755 ~/public_html/lec9</code></pre>
+                        <p>Download <code>.bw</code> & <code>.bed</code> result files to your local computer</p>
                         <hr/>
                     </div>
                 </div>
