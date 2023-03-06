@@ -47,7 +47,7 @@
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9"> Use <code>dnmtools</code> to identify partially methylated domains (PMDs) and differentially methylated regions (DMRs)</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9"> Use <code>dnmtools</code> to identify hypo-methylated regions (HMRs), differentially methylated regions (DMRs) and partially methylated domains (PMDs)</a></h5>
                 </div>
                 <div id="collapse9" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
@@ -60,17 +60,16 @@
                         <p>Calculate differential methylation with <kbd>methdiff</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools diff -o chr3.methdiff EpiLC.chr3.meth GSC.chr3.meth</code></pre>
                         <hr/>
-                        <p>Identify HMRs with <kbd>hmr</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools hmr -o GSC.chr3.hmr GSC.chr3.meth
-dnmtools hmr -o EpiLC.chr3.hmr EpiLC.chr3.meth</code></pre>
+                        <p>Identify HMRs with <kbd>hmr</kbd> Do the same for <code>EpiLC</code></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools hmr -o GSC.chr3.hmr GSC.chr3.meth</code></pre>
                         <hr/>
                         <p>Call DMRs usign <kbd>dmr</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools dmr chr3.methdiff EpiLC.chr3.hmr GSC.chr3.hmr DMR_EpiLC_lt_GSC.bed DMR_GSC_lt_EpiLC.bed</code></pre>
                         <hr/>
-                        <p>Determine PMDs with <kbd>pmd</kbd></p>
+                        <p>Determine PMDs with <kbd>pmd</kbd> Do the same for <code>EpiLC</code></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">dnmtools pmd -o GSC.chr3.pmd.bed GSC.chr3.meth</code></pre>
                         <hr/>
-                        <p>Download <code>.bw</code> & <code>.bed</code> result files to your local computer</p>
+                        <p>Add a <kbd>.bed</kbd> extension to the <kbd>.hmr</kbd> files. Download <code>.bw</code> & <code>.bed</code> result files to your local computer</p>
                         <hr/>
                     </div>
                 </div>
