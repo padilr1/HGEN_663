@@ -37,17 +37,14 @@
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec10/</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/hgen_share/lec10</code></a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Set up directory and copy over files</p>
+                        <p>Set up environment and copy over files</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 samtools/1.11 r/4.0.2
-conda activate /home/partage/envs/chip 
-mkdir -p ~/projects/lec10
-cd ~/projects/lec10
-cp -r /home/partage/lec10/* ./
-ls -lh</code></pre>
+export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/chip_seq_V2/bin:$PATH"</code></pre>
                     </div>
                 </div>
             </div>
@@ -66,10 +63,7 @@ ls -lh</code></pre>
                         <p>Visualize output through <kbd>plotHeatmap</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">plotHeatmap -m KO_H3K27ac.promoter.chr1.mat.gz -o KO_H3K27ac.promoter.chr1.pdf --legendLocation none --yAxisLabel "" --xAxisLabel "" --colorMap magma --regionsLabel "" --refPointLabel "Promoter"</code></pre>
                         <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec10
-mv -t ~/public_html/lec10/ *bw *pdf
-chmod -R 755 ~/public_html/lec10</code></pre>
+                         <p>Download <kbd>.bw</kbd> and <kbd>.pdf</kbd> result files to your local computer</p>
                     </div>
                 </div>
             </div>
@@ -82,12 +76,7 @@ chmod -R 755 ~/public_html/lec10</code></pre>
                         <p>Identify significantly enriched regions using <kbd>macs3</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">macs3 callpeak -t KO_H3K27ac.chr1.bam -c KO_Input.chr1.bam -f BAM -g 2.4e8 -n KO_H3K27ac.chr1 -q 0.01</code></pre>
                         <hr/>
-                        <p>Plot strand shift profile</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">Rscript KO_H3K27ac.chr1_model.r </code></pre>
-                        <hr/>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv -t ~/public_html/lec10/ *narrowPeak *pdf *csv
-chmod -R 755 ~/public_html/lec10</code></pre>
+                        <p>Download <kbd>.narrowPeak</kbd> file to your local computer</p>
                     </div>
                 </div>
             </div>
