@@ -33,17 +33,17 @@
     <body>
         <div class="container">
             <header class="blog-header py-3 mb-4 pt-3 pb-3">
-                <h1 style="font-family: Roboto Condensed; font-weight: bold;" class="display-5 mb-0 text-center">Lecture 10</h1>
+                <h1 style="font-family: Roboto Condensed; font-weight: bold;" class="display-5 mb-0 text-center">Lecture 11</h1>
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/hgen_share/lec11</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">For today's class, only copy over files that are <b>not</b> <kdb>bam</kdb> files from<code>/home/hgen_share/lec11</code></a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up environment and copy over files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020
-export PATH="/home/hgen_share/Anaconda/bin:$PATH"</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/chip_seq_V2/bin:$PATH"</code></pre>
                     </div>
                 </div>
             </div>
@@ -53,11 +53,11 @@ export PATH="/home/hgen_share/Anaconda/bin:$PATH"</code></pre>
                 </div>
                 <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Call peaks using <kbd>MACS3</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">macs3 callpeak -g hs -f BAMPE --extsize 200 --shift -100 --nomodel -B -p 1e-3 --keep-dup all -t mut_rep1.bam -n mut_rep1 --outdir peaks</code></pre>
+                        <p>Call peaks using <kbd>MACS3</kbd>. Call peaks for the other samples: <b>mut_rep2.bam,rescue_rep1.bam,rescue_rep2.bam</b></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">macs3 callpeak -g hs -f BAMPE --extsize 200 --shift -100 --nomodel -B -p 1e-3 --keep-dup all -t /home/hgen_share/lec11/mut_rep1.bam -n mut_rep1 --outdir .</code></pre>
                         <hr/>
-                        <p>Run IDR</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">idr --samples mut_rep1.narrowPeak mut_rep2.narrowPeak \
+                        <p>Run IDR for both conditions</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">idr --samples mut_rep1_peaks.narrowPeak mut_rep2_peaks.narrowPeak \
 --input-file-type narrowPeak \
 --rank p.value \
 --output-file mut-idr \
@@ -67,35 +67,38 @@ export PATH="/home/hgen_share/Anaconda/bin:$PATH"</code></pre>
 --log-output-file mut.idr.log</code></pre>
                         <hr/>
                         <p>Pool together peaks. Make a <kbd>.saf</kbd> file to use with <kbd>featureCounts</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cat *-idr | sort -k1,1 -k2,2n | bedtools merge | tee merged.bed | wc -l
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 bedtools/2.30.0
+cat *-idr | sort -k1,1 -k2,2n | bedtools merge | tee merged.bed | wc -l
 bedtools intersect -a merged.bed -b blacklist.hg19.bed -v \
 > merged.filtered.bed
 awk 'OFS="\t" {print $1"."$2"."$3, $1, $2, $3, "."}' merged.filtered.bed > merged.saf</code></pre>
                         <hr/>
                         <p>Run <kbd>featureCounts</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">featureCounts -a merged.saf -F SAF -o xie2022.fc.txt -T 6 -p mut_rep1.bam mut_rep2.bam rescue_rep1.bam rescue_rep2.bam</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">module load StdEnv/2020 gcc/9.3.0 subread/2.0.1
+featureCounts -a merged.saf -F SAF -o xie2022.fc.txt -p /home/hgen_share/lec11/mut_rep1.bam /home/hgen_share/lec11/mut_rep2.bam /home/hgen_share/lec11/rescue_rep1.bam /home/hgen_share/lec11/rescue_rep2.bam</code></pre>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse3" aria-expanded="false" aria-controls="collapse3">Assess profile of ATAC-seq signal on open and closed peaks</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse3" aria-expanded="false" aria-controls="collapse3">Assess profile of ATAC-seq signal on different types of reference peaks</a></h5>
                 </div>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Aggregate signal centered on open and closed ATAC-seq peaks using <kdb>computeMatrix</kdb></p>
+                        <p>Aggregate signal centered on ATAC-seq peaks using <kdb>computeMatrix</kdb></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">computeMatrix reference-point -R open_peaks.bed \
 -S mut_rep1.cpm.bw mut_rep2.cpm.bw rescue_rep1.cpm.bw rescue_rep2.cpm.bw \
--bl blaclist.hg19.bed \
+-bl blacklist.hg19.bed \
 --referencePoint center \
 --binSize 50 -a 2500 -b 2500 \
 --missingDataAsZero --skipZeros \
 --samplesLabel mut_1 mut_2 rescue_1 rescue_2 \
 -o ATAC.mat.gz</code></pre>
+                        <p>Due to memory/speed limitations, you can cancel it with <kbd>Ctrl</kbd> + <kbd>C</kbd>  Instead, the compressed matrix from this analysis has been provided for you in <code>/home/hgen_share/lec11</code></p>
                         <hr/>
-                        <p>Visualize output through <kbd>plotHeatmap</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">plotHeatmap -m ATAC.mat.gz -o heatmap.png --dpi 600 --colorMap Reds --verbose -x "ATAC" -y "" --startLabel "" --endLabel "" --regionsLabel ""</code></pre>
-                        <hr/>
+                        <p>Choosing the appropriate reference regions influences how the signal behaves. Plot the output based on different reference regions: <b>union_peaks.mat.gz, open_peaks.mat.gz, closed_peaks.mat.gz, mut_peaks.mat.gz, rescue_peaks.mat.gz</b>. Visualize the output through <kbd>plotHeatmap</kbd> and/or <kbd>plotProfile</kbd>. How do the plots differ using the different reference regions?</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">plotHeatmap -m ATAC.mat.gz -o heatmap.png --dpi 600 --colorMap Reds --verbose -x "ATAC" -y "" --startLabel "" --endLabel "" --regionsLabel ""
+plotProfile -m ATAC.mat.gz -out aggregate_plot.png --perGroup --refPointLabel "ATAC" -T "ATACseq" --dpi 600 --regionsLabel ""</code></pre>
                     </div>
                 </div>
             </div>
@@ -106,7 +109,7 @@ awk 'OFS="\t" {print $1"."$2"."$3, $1, $2, $3, "."}' merged.filtered.bed > merge
                 <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Perform motif enrichment analysis using <kbd>findMotifsGenome.pl</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">findMotifsGenome.pl open_peaks.bed hg19 HOMER.open_peaks -size given -mask -bg merged.filtered.bed</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">findMotifsGenome.pl open_peaks.bed hg19 HOMER.open_peaks -size given -mask -bg union_peaks.bed</code></pre>
                         <p>You can cancel it with <kbd>Ctrl</kbd> + <kbd>C</kbd></p>
                     </div>
                 </div>
