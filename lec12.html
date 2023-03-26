@@ -37,15 +37,11 @@
             </header>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/partage/lec12/</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1">Copy the files for today's class from <code>/home/hgen_share/lec12</code></a></h5>
                 </div>
                 <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Set up directory and copy over files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/projects/lec12
-cd ~/projects/lec12
-cp -r /home/partage/lec12/* ./
-ls -lh</code></pre>
                     </div>
                 </div>
             </div>
@@ -59,7 +55,8 @@ ls -lh</code></pre>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">zcat NPC_1.chr19.pairs.gz | head | column -t</code></pre>
                         <hr>
                         <p>Set up environment</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">conda activate /home/partage/envs/hic
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
+export PATH="/home/hgen_share/Anaconda/envs/chip_seq_V3/bin:$PATH"                        
 export NUMEXPR_MAX_THREADS=1
 export MKL_NUM_THREADS=1
 export OMP_NUM_THREADS=1</code></pre>
@@ -88,27 +85,7 @@ cooler show NPC_1.chr19.mcool::/resolutions/100000 -b -o 100kb.ice.png chr19
 cooler show NPC_1.chr19.mcool::/resolutions/10000 -o 10kb.raw.png chr19
 cooler show NPC_1.chr19.mcool::/resolutions/100000 -o 100kb.raw.png chr19</code></pre>
                         <hr>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mkdir -p ~/public_html/lec12
-mv *png ~/public_html/lec12/
-chmod -R 755 ~/public_html/lec12</code></pre>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2">Try out HiCRep on <code>ESC_1.mcool</code> and <code>NPC_1.mcool</code></a></h5>
-                </div>
-                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>Grab the files</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">ln -s /home/partage/lec12_extra/* ./</code></pre>
-                        <hr/>
-                        <p>Apply <kbd>HiCRep</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">hicrep --binSize 500000 --h 2 --dBPMax 5000000 ESC_1.mcool NPC_1.mcool hicrep.out</code></pre>
-                        <hr/>
-                        <p>Show the output</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cat hicrep.out</code></pre>
+                        <p>Download results to your local computer, specifically files ending with <kbd>.png</kbd></p>
                     </div>
                 </div>
             </div>
@@ -192,21 +169,6 @@ plotHeatmap -m NPC.bdrs.mat.gz -o NPC.bdrs.pdf --legendLocation none --yAxisLabe
                         <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv *pdf ~/public_html/lec12/
 chmod -R 644 ~/public_html/lec12/*pdf</code></pre>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4 hoverable">
-                <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse7" aria-expanded="false" aria-controls="collapse7"> Find dots on again the same matrix</a></h5>
-                </div>
-                <div id="collapse7" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
-                    <div class="card-body">
-                        <p>Use the expected values computed before together with <kbd>cooltools call-dots</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools call-dots NPC_1.chr19.mcool::/resolutions/10000 NPC_1.chr19.cis.tsv -o NPC_1.chr19.dots -p 1</code></pre>
-                        <hr/>
-                        <p>Look at the outputs</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.dots | column -t
-head NPC_1.chr19.dots.postproc</code></pre>
                     </div>
                 </div>
             </div>
