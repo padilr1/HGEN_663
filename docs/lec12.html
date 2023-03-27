@@ -166,9 +166,22 @@ plotHeatmap -m NPC.bdrs.mat.gz -o NPC.bdrs.pdf --legendLocation none --yAxisLabe
   --xAxisLabel "" --colorMap magma --regionsLabel "" --refPointLabel "Insulating loci" \
   --samplesLabel CTCF H3K27ac H3K27me3 H3K36me3 H3K4me1 H3K4me3 H3K9me3 Ring1b</code></pre>
                         <hr>
-                        <p>Move results to public folder and download from https://hgen663.vhost37.genap.ca/~studXX</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">mv *pdf ~/public_html/lec12/
-chmod -R 644 ~/public_html/lec12/*pdf</code></pre>
+                        <p>Download resulting <kbd>pdf</kbd> files to your local computer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse7" aria-expanded="false" aria-controls="collapse7"> Find dots on again the same matrix</a></h5>
+                </div>
+                <div id="collapse7" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Use the expected values computed before together with <kbd>cooltools call-dots</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools call-dots NPC_1.chr19.mcool::/resolutions/10000 NPC_1.chr19.cis.tsv -o NPC_1.chr19.dots -p 1</code></pre>
+                        <hr/>
+                        <p>Look at the outputs</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.dots | column -t
+head NPC_1.chr19.dots.postproc</code></pre>
                     </div>
                 </div>
             </div>
