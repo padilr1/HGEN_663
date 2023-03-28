@@ -47,22 +47,19 @@
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9"> Generate an uniformly binned contact matrix from <code>NPC_1.chr19.pairs.gz</code></a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2"> Generate an uniformly binned contact matrix from <code>NPC_1.chr19.pairs.gz</code></a></h5>
                 </div>
-                <div id="collapse9" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Check out the first few lines of the file</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">zcat NPC_1.chr19.pairs.gz | head | column -t</code></pre>
                         <hr>
                         <p>Set up environment</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">export PATH="/home/hgen_share/Anaconda/bin:$PATH"
-export PATH="/home/hgen_share/Anaconda/envs/chip_seq_V3/bin:$PATH"                        
-export NUMEXPR_MAX_THREADS=1
-export MKL_NUM_THREADS=1
-export OMP_NUM_THREADS=1</code></pre>
+export PATH="/home/hgen_share/Anaconda/envs/chip_seq_V3/bin:$PATH"</code></pre>
                         <hr>
-                        <p>Create matrix from the pairix-indexed and sorted file with <kbd>cooler cload pairix</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler cload pairix mm10.chr19.size:10000 NPC_1.chr19.pairs.gz NPC_1.chr19.cool -p 1</code></pre>
+                        <p>Create matrix from the pairix-indexed and sorted file with <kbd>cooler cload pairix</kbd>. You can cancel with <kbd>Ctrl + C</kbd> because this will take a while</p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler cload pairix mm10.chr19.size:10000 NPC_1.chr19.pairs.gz NPC_1.chr19.cool</code></pre>
                         <hr>
                         <p>Examine the output file's metadata using <kbd>cooler info</kbd></p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooler info NPC_1.chr19.cool </code></pre>
@@ -96,19 +93,13 @@ cooler show NPC_1.chr19.mcool::/resolutions/100000 -o 100kb.raw.png chr19</code>
                 <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Take the average across sub-diagonals with <kbd>cooltools compute-expected</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools compute-expected NPC_1.chr19.mcool::/resolutions/10000 -o NPC_1.chr19.cis.tsv -p 1 --contact-type cis</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools expected-cis NPC_1.chr19.mcool::/resolutions/10000 -o NPC_1.chr19.cis.tsv -p 1</code></pre>
                         <hr/>
                         <p>Peek at the output</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.cis.tsv | column -t</code></pre>
                         <hr/>
-                        <p>How would you compute the expected value for trans matrices?</p>
+                        <p>Now compute the expected value for trans matrices. See <a class="headref" href="https://cooltools.readthedocs.io/en/latest/cli.html#cooltools-expected-trans">cooltools</a></p>
                         <hr/>
-                        <p>Further process the file for visuaslization through <kbd>cooltools logbin-expected</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools logbin-expected NPC_1.chr19.cis.tsv NPC_1.chr19.cis --bins-per-order-magnitude 20 --resolution 1000</code></pre>
-                        <hr/>
-                        <p>Again check out the first few lines</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.cis.log.tsv
-head NPC_1.chr19.cis.der.tsv</code></pre>
                     </div>
                 </div>
             </div>
@@ -119,69 +110,337 @@ head NPC_1.chr19.cis.der.tsv</code></pre>
                 <div id="collapse5" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Compute the first few eigenvectors using <kbd>cooltools call-compartments</kbd> with GC content as the reference for sign-flipping</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools call-compartments NPC_1.chr19.mcool::/resolutions/100000 \
-  --reference-track gc/100000.bg --contact-type cis --n-eigs 3 -o NPC_1.chr19</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools eigs-cis --n-eigs 3 -o NPC_1.chr19 --phasing-track 100000.bg NPC_1.chr19.mcool::/resolutions/100000</code></pre>
+                        <hr/>
+                        <p>Now compute the first few eigenvectors for trans matrices. See <a class="headref" href="https://cooltools.readthedocs.io/en/latest/cli.html#cooltools-eigs-trans">cooltools</a></p>
                         <hr/>
                         <p>Look at the outputs</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cat NPC_1.chr19.cis.lam.txt
 head NPC_1.chr19.cis.vecs.tsv</code></pre>
                         <hr>
-                        <p>What are some other hallmarks distinguishing euchromatin from heterochromatin?</p>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse6" aria-expanded="false" aria-controls="collapse6"> Identify contact-insulating loci also for the same matrix</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse6" aria-expanded="false" aria-controls="collapse6"><b>Extra:</b> Visualize eigenvectors using a saddle-plot</a></h5>
                 </div>
                 <div id="collapse6" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
-                        <p>Compute insulation score via <kbd>cooltools diamond-insulation</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools diamond-insulation NPC_1.chr19.mcool::/resolutions/10000 100000 > NPC_1.chr19.ins.tsv</code></pre>
+                        <p>Use python version of <kbd>cooltools</kbd></p>
+                        <pre class="language-python" data-user="user" data-host="remotehost"><code class="language-bash"># import standard python libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import os, subprocess
+import cooler
+import cooltools.lib.plotting
+import cooltools
+# read in cooler
+clr = cooler.Cooler('/lustre06/project/6007495/padilr1/projects/HGEN663_W21/pub/lec12_extra/NPC.mcool::/resolutions/100000')
+# generate dataframe of gc coverage in your organism, here it is mm10 or mouse
+import bioframe
+bins = clr.bins()[:]
+mm10_genome = bioframe.load_fasta('/lustre06/project/6007495/padilr1/pipelines/hic/dcHiC/demo/dcHiC_demo/ESC_NPC_CN_100Kb/mm10_100000_goldenpathData/mm10.fa');
+gc_cov = bioframe.frac_gc(bins[['chrom', 'start', 'end']], mm10_genome)
+# gc_cov.to_csv('mm10_gc_cov_100kb.tsv',index=False,sep='\t') = this script can export the gc coverage dataframe into a csv file
+
+## Cooltools also allows a view to be passed for eigendecomposition to limit to a certain set of regions. The following code creates the simplest view, of the two chromosomes in this cooler
+view_df = pd.DataFrame({'chrom': clr.chromnames,
+                        'start': 0,
+                        'end': clr.chromsizes.values,
+                        'name': clr.chromnames}
+                      )
+## obtain first 3 eigenvectors
+cis_eigs = cooltools.eigs_cis(
+                        clr,
+                        gc_cov,
+                        view_df=view_df,
+                        n_eigs=3,
+                        )
+
+# cis_eigs[0] returns eigenvalues, here we focus on eigenvectors
+eigenvector_track = cis_eigs[1][['chrom','start','end','E1']]
+# calculate the expected cis values
+cvd = cooltools.expected_cis(
+        clr=clr,
+        view_df=view_df,
+)
+#
+Q_LO = 0.025 # ignore 2.5% of genomic bins with the lowest E1 values
+Q_HI = 0.975 # ignore 2.5% of genomic bins with the highest E1 values
+N_GROUPS = 38 # divide remaining 95% of the genome into 38 equisized groups, 2.5% each
+
+# saddle then plots two matrices: one with the sum for each pair of categories, interaction_sum, and the other with the number of bins for each pair of categories, interaction_count. Typically, interaction_sum/interaction_count is visualized
+interaction_sum, interaction_count =  cooltools.saddle(
+        clr,
+        cvd,
+        eigenvector_track,
+        'cis',
+        n_bins=N_GROUPS,
+        qrange=(Q_LO,Q_HI),
+        view_df=view_df
+)
+
+# parameters and functions required to plot the saddle plot
+import warnings
+from cytoolz import merge
+
+def saddleplot(
+    track,
+    saddledata,
+    n_bins,
+    vrange=None,
+    qrange=(0.0, 1.0),
+    cmap="coolwarm",
+    scale="log",
+    vmin=0.5,
+    vmax=2,
+    color=None,
+    title=None,
+    xlabel=None,
+    ylabel=None,
+    clabel=None,
+    fig=None,
+    fig_kws=None,
+    heatmap_kws=None,
+    margin_kws=None,
+    cbar_kws=None,
+    subplot_spec=None,
+):
+    from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
+    from matplotlib.colors import Normalize, LogNorm
+    from matplotlib import ticker
+    import matplotlib.pyplot as plt
+    class MinOneMaxFormatter(ticker.LogFormatter):
+        def set_locs(self, locs=None):
+            self._sublabels = set([vmin % 10 * 10, vmax % 10, 1])
+            
+        def __call__(self, x, pos=None):
+            if x not in [vmin, 1, vmax]:
+                return ""
+            else:
+                return "{x:g}".format(x=x)
+    
+    track_value_col = track.columns[3]
+    track_values = track[track_value_col].values
+    
+    digitized_track, binedges = cooltools.digitize(
+        track, n_bins, vrange=vrange, qrange=qrange
+    )
+    x = digitized_track[digitized_track.columns[3]].values.astype(int).copy()
+    x = x[(x > -1) & (x < len(binedges) + 1)]
+    
+    groupmean = track[track.columns[3]].groupby(digitized_track[digitized_track.columns[3]]).mean()
+    
+    if qrange is not None:
+        lo, hi = qrange
+        binedges = np.linspace(lo, hi, n_bins + 1)
+    
+    n = saddledata.shape[0]
+    X, Y = np.meshgrid(binedges, binedges)
+    C = saddledata
+    if (n - n_bins) == 2:
+        C = C[1:-1, 1:-1]
+        groupmean = groupmean[1:-1]
+    
+    if subplot_spec is not None:
+        GridSpec = partial(GridSpecFromSubplotSpec, subplot_spec=subplot_spec)
+    grid = {}
+    gs = GridSpec(
+        nrows=3,
+        ncols=3,
+        width_ratios=[0.2, 1, 0.1],
+        height_ratios=[0.2, 1, 0.1],
+        wspace=0.05,
+        hspace=0.05,
+    )
+    
+    if fig is None:
+        fig_kws_default = dict(figsize=(5, 5))
+        fig_kws = merge(fig_kws_default, fig_kws if fig_kws is not None else {})
+        fig = plt.figure(**fig_kws)
+        
+    if scale == "log":
+        norm = LogNorm(vmin=vmin, vmax=vmax)
+    elif scale == "linear":
+        norm = Normalize(vmin=vmin, vmax=vmax)
+    else:
+        raise ValueError("Only linear and log color scaling is supported")
+    grid["ax_heatmap"] = ax = plt.subplot(gs[4])
+    heatmap_kws_default = dict(cmap="coolwarm", rasterized=True)
+    heatmap_kws = merge(
+        heatmap_kws_default, heatmap_kws if heatmap_kws is not None else {}
+    )
+    img = ax.pcolormesh(X, Y, C, norm=norm, **heatmap_kws)
+    plt.gca().yaxis.set_visible(False)
+    
+    margin_kws_default = dict(edgecolor="k", facecolor=color, linewidth=1)
+    margin_kws = merge(margin_kws_default, margin_kws if margin_kws is not None else {})
+    grid["ax_margin_y"] = plt.subplot(gs[3], sharey=grid["ax_heatmap"])
+    
+    plt.barh(
+        binedges, height=1/len(binedges), width=groupmean, align="edge", **margin_kws
+    )
+    
+    plt.xlim(plt.xlim()[1], plt.xlim()[0])  # fliplr
+    plt.ylim(hi, lo)
+    plt.gca().spines["top"].set_visible(False)
+    plt.gca().spines["bottom"].set_visible(False)
+    plt.gca().spines["left"].set_visible(False)
+    plt.gca().xaxis.set_visible(False)
+    grid["ax_margin_x"] = plt.subplot(gs[1], sharex=grid["ax_heatmap"])
+    
+    plt.bar(
+        binedges, width=1/len(binedges), height=groupmean, align="edge", **margin_kws
+    )
+    
+    plt.xlim(lo, hi)
+    plt.gca().spines["top"].set_visible(False)
+    plt.gca().spines["right"].set_visible(False)
+    plt.gca().spines["left"].set_visible(False)
+    plt.gca().xaxis.set_visible(False)
+    plt.gca().yaxis.set_visible(False)
+    
+    grid["ax_cbar"] = plt.subplot(gs[5])
+    cbar_kws_default = dict(fraction=0.8, label=clabel or "")
+    cbar_kws = merge(cbar_kws_default, cbar_kws if cbar_kws is not None else {})
+    if scale == "linear" and vmin is not None and vmax is not None:
+        grid["ax_cbar"] = cb = plt.colorbar(img, **cbar_kws)
+        decimal = 10
+        nsegments = 5
+        cd_ticks = np.trunc(np.linspace(vmin, vmax, nsegments) * decimal) / decimal
+        cb.set_ticks(cd_ticks)
+    else:
+        print('cbar')
+        
+        cb = plt.colorbar(img, format=MinOneMaxFormatter(), cax=grid["ax_cbar"], **cbar_kws)
+        cb.ax.yaxis.set_minor_formatter(MinOneMaxFormatter())
+    grid["ax_heatmap"].set_xlim(lo, hi)
+    grid["ax_heatmap"].set_ylim(hi, lo)
+    grid['ax_heatmap'].grid(False)
+    if title is not None:
+        grid["ax_margin_x"].set_title(title)
+    if xlabel is not None:
+        grid["ax_heatmap"].set_xlabel(xlabel)
+    if ylabel is not None:
+        grid["ax_margin_y"].set_ylabel(ylabel)
+    
+    return grid
+
+## finally, plot the saddle-plot
+img = saddleplot(eigenvector_track,
+           interaction_sum/interaction_count,
+           N_GROUPS,
+           qrange=(Q_LO,Q_HI),
+           cbar_kws={'label':'average observed/expected contact frequency'}
+          );
+
+## save figure
+plt.savefig('/lustre06/project/6007495/padilr1/projects/HGEN663_W21/pub/lec12_extra/final_analysis/saddleplot/NPC.saddle.cis.100000.png')</code></pre>
+                        <hr/>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse7" aria-expanded="false" aria-controls="collapse7"><b>Extra:</b> Run differential compartment analysis</a></h5>
+                </div>
+                <div id="collapse7" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Differential compartment analysis using <a class="headref" href="https://github.com/ay-lab/dcHiC">dcHiC</a></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">###                  STEP 1                  ###
+### Step 1: dcHiC will create the raw PC files for each chromosome. ###
+
+Rscript ../scripts/dchicf.r --file input.ES_NPC.txt --pcatype cis --dirovwt T --cthread 2 --pthread 4
+
+###                  STEP 2                  ###
+### Step 2: dcHiC will select the best pc out of PC1 and PC2 for each chromosome 
+### by comparing each one against GC content and gene density through correlation.
+
+Rscript ../scripts/dchicf.r --file input.ES_NPC_CN.txt --pcatype select --dirovwt T --genome mm10 --cthread 8 --pthread 4 --gfolder /lustre06/project/6007495/padilr1/pipelines/hic/dcHiC/demo/dcHiC_demo/ESC_NPC_CN_100Kb/mm10_100000_goldenpathData
+
+###                  STEP 3                  ###
+### Step 3: dcHiC will use the selected PC and qunatile normalize them.
+### This will be followed by mahalanobis distance calculation and outlier detection.
+### If replicates are available, dcHiC will apply IHW (independent hypothesis weighting) to adjust the significance. 
+### This will create a directory "DifferentialResult" and few more subfolder. 
+### differential.intra_sample_group.pcOri.bedGraph shows the significance score for all the Hi-C bins.
+### differential.intra_sample_group.Filtered.pcOri.bedGraph shows the filtered (padj < 0.1) the Hi-C bins.
+### The differential.intra_sample_combined.*.bedGraph file shows the compartment scores and significance 
+### of each replicates, differential.intra_sample_group.*.bedGraph files are the subset of these.
+### *.pcOri.* are files with original pc values i.e. before quantile normalized values.
+### *.pcQnm.* are files with quantile normalized values. 
+### Note: All the differential compartment analysis is performed using *.pcQnm.* files. 
+### *.pcOri.* files are generated for vizualization purpose.
+
+Rscript ../scripts/dchicf.r --file input.ES_NPC_CN.txt --pcatype analyze --dirovwt T --diffdir ES_NPC_100Kb
+
+
+###                  STEP 4                 ###
+### Step 6: dcHiC will generate the standalone IGV web page.
+### The step reqires "create_datauri" code provided within scripts directory.
+### Please create a soft-link to your ln -s ./scripts/create_datauri ~/.local/bin/
+
+Rscript ../scripts/dchicf.r --file input.ES_NPC.txt --pcatype viz --dirovwt T --diffdir ES_NPC_100Kb --genome mm10 --pcgroup pcOri
+
+
+###                  STEP 5              ###
+### Step 7: dcHiC will perform enrichment with the genes overlapping with the 
+### differential A-compartments in each sample. This step will generate a 
+### geneEnrichment directory under DifferentialResult/
+### Under geneEnrichment directory there will sub-directories named as *_geneEnrichment.
+### We recomment using the *_geneList.anchor.txt (Entrez IDs) file to perform the gene-enrichment using
+### https://toppgene.cchmc.org/enrichment.jsp .
+
+
+Rscript ../scripts/dchicf.r --file input.ES_NPC.txt --pcatype enrich --genome mm10 --diffdir ES_NPC_100Kb --exclA F --pcscore T --region anchor --pcgroup pcOri --gfolder mm10_100000_goldenpathData</code></pre>
+                        <hr/>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-4 hoverable">
+                <div class="card-header" role="tab">
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse8" aria-expanded="false" aria-controls="collapse8"> Identify contact-insulating loci also for the same matrix</a></h5>
+                </div>
+                <div id="collapse8" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                    <div class="card-body">
+                        <p>Compute insulation score via <kbd>cooltools insulation</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools insulation NPC_1.chr19.mcool::/resolutions/10000 100000 > NPC_1.chr19.ins.tsv</code></pre>
                         <hr/>
                         <p>Inspect the output</p>
                         <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.ins.tsv</code></pre>
                         <hr/>
-                        <p>Select strongly insulating loci and convert to the BED file</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">sed 1d NPC_1.chr19.ins.tsv \
-  | grep -v nan \
-  | awk -v OFS='\t' '($4 != "True" &amp;&amp; $7 > 0.2){print $1, $2, $3, $7}' \
-  > NPC_1.chr19.bdrs.bed</code></pre>
-                        <hr/>
-                        <p>Create a bigWig track for the insulation score</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">sed 1d NPC_1.chr19.ins.tsv | cut -f-5 | egrep -v 'nan|True' | cut -f1-3,5 > NPC_1.chr19.IS.bg
-bedGraphToBigWig NPC_1.chr19.IS.bg mm10.chr19.size NPC_1.chr19.IS.bw</code></pre>
-                        <hr/>
-                        <p>Aggregate the insulation score track around the selected loci</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">computeMatrix reference-point -S NPC_1.chr19.IS.bw -R NPC_1.chr19.bdrs.bed \
-  --referencePoint center -b 100000 -a 100000 -bs 1000 -o NPC_1.chr19.IS.bdrs.mat.gz
-plotHeatmap -m NPC_1.chr19.IS.bdrs.mat.gz -o NPC_1.chr19.IS.bdrs.pdf \
-  --legendLocation none --yAxisLabel "" --xAxisLabel "" --colorMap magma \
-  --regionsLabel "" --refPointLabel "Insulating loci"</code></pre>
-                        <hr/>
-                        <p>(Skip in class) Visualize other marks for genome-wide calls</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">computeMatrix reference-point -S chip/NPC*.bw -R NPC.bdrs.bed \
-  --referencePoint center -a 1000000 -b 1000000 -bs 10000 -o NPC.bdrs.mat.gz
-plotHeatmap -m NPC.bdrs.mat.gz -o NPC.bdrs.pdf --legendLocation none --yAxisLabel "" \
-  --xAxisLabel "" --colorMap magma --regionsLabel "" --refPointLabel "Insulating loci" \
-  --samplesLabel CTCF H3K27ac H3K27me3 H3K36me3 H3K4me1 H3K4me3 H3K9me3 Ring1b</code></pre>
-                        <hr>
-                        <p>Download resulting <kbd>pdf</kbd> files to your local computer</p>
                     </div>
                 </div>
             </div>
             <div class="card mb-4 hoverable">
                 <div class="card-header" role="tab">
-                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse7" aria-expanded="false" aria-controls="collapse7"> Find dots on again the same matrix</a></h5>
+                    <h5 class="mb-0"><a class="collapsed" data-toggle="collapse" href="#collapse9" aria-expanded="false" aria-controls="collapse9"> Find dots on again the same matrix</a></h5>
                 </div>
-                <div id="collapse7" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
+                <div id="collapse9" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="">
                     <div class="card-body">
                         <p>Use the expected values computed before together with <kbd>cooltools call-dots</kbd></p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools call-dots NPC_1.chr19.mcool::/resolutions/10000 NPC_1.chr19.cis.tsv -o NPC_1.chr19.dots -p 1</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">cooltools dots NPC_1.chr19.mcool::/resolutions/10000 NPC_1.chr19.cis.tsv -o NPC_1.chr19.dots -p 1</code></pre>
                         <hr/>
                         <p>Look at the outputs</p>
-                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.dots | column -t
-head NPC_1.chr19.dots.postproc</code></pre>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash">head NPC_1.chr19.dots</code></pre>
+                        <hr/>
+                        <p>Pile up the loops using <kbd>coolpup.py</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash"></code>cut -f 1-6 NPC_1.chr19.dots > NPC_1.chr19.dots.bedpe
+coolpup.py NPC_1.chr19.mcool::/resolutions/10000 NPC_1.chr19.dots.bedpe \
+--features_format bedpe \
+--outname NPC.cis_10000.pileup.clpy --nproc 1 \
+--expected /home/hgen_share/test/NPC_1.chr19.cis.tsv</pre>
+                        <hr/>
+                        <p>Plot the loop pile-up using <kbd>plotpup.py</kbd></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash"></code>plotpup.py --input_pups NPC.cis_10000.pileup.clpy --output NPC.cis_10000.pileup.png</pre>
+                        <hr/>
+                        <p><b>Extra:</b> Perform differential loop analysis on union of loops using <a class="headref" href="https://github.com/koszullab/pareidolia">pareidolia</a></p>
+                        <pre class="language-bash" data-user="user" data-host="remotehost"><code class="language-bash"></code>pareidolia -n 8 -b /lb/project/GRID/padilr1/projects/HGEN663/readpileup/union.dots.bedpe -k loops \
+/lb/project/GRID/padilr1/projects/HGEN663/lec12_extra/ESC_1.mcool::resolutions/10000,/lb/project/GRID/padilr1/projects/HGEN663/lec12_extra/ESC_2.mcool::resolutions/10000,/lb/project/GRID/padilr1/projects/HGEN663/lec12_extra/ESC_3.mcool::resolutions/10000,/lb/project/GRID/padilr1/projects/HGEN663/lec12_extra/ESC_4.mcool::resolutions/10000,/lb/project/GRID/padilr1/projects/HGEN663/lec12_extra/NPC_1.mcool::resolutions/10000,/lb/project/GRID/padilr1/projects/HGEN663/lec12_extra/NPC_2.mcool::resolutions/10000,/lb/project/GRID/padilr1/projects/HGEN663/lec12_extra/NPC_3.mcool::resolutions/10000,/lb/project/GRID/padilr1/projects/HGEN663/lec12_extra/NPC_4.mcool::resolutions/10000 \
+ESC,ESC,ESC,ESC,NPC,NPC,NPC,NPC \
+output.pareidolia.tsv</pre>
                     </div>
                 </div>
             </div>
